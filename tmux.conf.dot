@@ -235,6 +235,7 @@ bind-key t setw synchronize-panes off
 
 # Tmux plugin manager
 # Plugin list
+TMUX_PLUGIN_MANAGER_PATH=~/.tmux/plugins/tpm
 set -g @plugin 'tmux-plugins/tpm'
 set -g @plugin 'tmux-plugins/tmux-resurrect'
 set -g @plugin 'tmux-plugins/tmux-continuum'

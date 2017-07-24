@@ -20,21 +20,22 @@ clone_or_pull() {
 github_vundle_loc=https://github.com/VundleVim/Vundle.vim.git
 vim_bundle_root=~/.vim/bundle
 
-github_tmux_plugin=https://github.com/tmux-plugins/tpm
-tmux_plugin_root=~/.tmux/plugin
+github_tmux_plugin_loc=https://github.com/tmux-plugins/tpm
+tmux_plugin_root=~/.tmux/plugins
 
 oh_my_zsh_installer=https://raw.githubusercontent.com/robbyrussell/oh-my-zsh/master/tools/install.sh
 
 
 info "Symlink dotfiles"
-package_root=$(dirname $0)
-for f in $package_dotfiles; do
-	ln -s $package_root/$f ~/.${f} >& /dev/null
+package_root=$(readlink --canonicalize ${0%/*})
+for f in $(ls -1 $package_root/*.dot); do
+	target_f=$(basename $f)
+	target_f=${target_f%%.dot}
+	ln -s $f ~/.${target_f} > /dev/null 2>&1
 done
 
-
 info "Install vundle"
-clone_or_pull $github_vundle_loc $vim_bundle_root/vundle
+clone_or_pull $github_vundle_loc $vim_bundle_root/Vundle.vim
 
 
 info "Install the vim plugins"
@@ -47,7 +48,8 @@ sh -c "$(curl -fsSL $oh_my_zsh_installer)"
 
 info "Install tmux plugin manager(TPM)"
 mkdir -p $tmux_plugin_root
-git clone $github_tmux_plugin_local $tmux_plugin_root/tpm
+git clone $github_tmux_plugin_loc $tmux_plugin_root/tpm
+
 # Now install the tmux plugins from .tmux.conf
-~/.tmux/plugins/tpm/bin/install_plugins
+$tmux_plugin_root/tpm/bin/install_plugins
 
