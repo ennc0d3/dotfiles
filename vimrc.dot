@@ -19,8 +19,8 @@ filetype plugin indent on    " required
    syntax enable
    set background=dark
    if &t_Co >=256 || has("gui_running")
-	   colorscheme solarized
-	endif
+      colorscheme solarized
+   endif
 " }}}
 "
 " Common setings{{{
@@ -55,6 +55,7 @@ set noswapfile
 
 set list
 set listchars=tab:▸\ ,eol:¬
+set expandtab
 autocmd filetype html,xml set listchars-=tab:>.
 " }}}
 "
@@ -69,8 +70,14 @@ nmap <silent> <leader>ev :e $MYVIMRC<CR>     "edit .vimrc
 nmap <silent> <leader>sv :so $MYVIMRC<CR>    "source .vimrc
 " }}}
 "
+"
 " vim-markdown-preview {{{
 " pip install grip
+" 0 - depends on markdown perl plugin
+" 1 - for github style
 let vim_markdown_preview_github=1
+" 0, not on buffer write 1 - display image on ctrl-p, 2 - preview on write
+" with image, 3- preview on write without image rendering
+let vim_markdown_preview_toggle=3
 "}}}
 
