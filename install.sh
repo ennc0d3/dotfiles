@@ -20,6 +20,9 @@ clone_or_pull() {
 github_vundle_loc=https://github.com/VundleVim/Vundle.vim.git
 vim_bundle_root=~/.vim/bundle
 
+github_tmux_plugin=https://github.com/tmux-plugins/tpm
+tmux_plugin_root=~/.tmux/plugin
+
 oh_my_zsh_installer=https://raw.githubusercontent.com/robbyrussell/oh-my-zsh/master/tools/install.sh
 
 
@@ -40,3 +43,11 @@ vim +PluginInstall +qall
 
 info "Install oh-my-zsh"
 sh -c "$(curl -fsSL $oh_my_zsh_installer)"
+
+
+info "Install tmux plugin manager(TPM)"
+mkdir -p $tmux_plugin_root
+git clone $github_tmux_plugin_local $tmux_plugin_root/tpm
+# Now install the tmux plugins from .tmux.conf
+~/.tmux/plugins/tpm/bin/install_plugins
+
