@@ -8,8 +8,9 @@ call vundle#begin()
    Plugin 'scrooloose/nerdtree'
    Plugin 'scrooloose/syntastic'
    Plugin 'bronson/vim-trailing-whitespace'
-   "Plugin 'Valloric/YouCompleteMe'
+   Plugin 'JamshedVesuna/vim-markdown-preview'
    Plugin 'altercation/vim-colors-solarized'
+   "Plugin 'Valloric/YouCompleteMe'
 call vundle#end()
 
 filetype plugin indent on    " required
@@ -67,4 +68,9 @@ nmap <leader>l :set list!<CR>
 nmap <silent> <leader>ev :e $MYVIMRC<CR>     "edit .vimrc
 nmap <silent> <leader>sv :so $MYVIMRC<CR>    "source .vimrc
 " }}}
+"
+" vim-markdown-preview {{{
+" pip install grip
+let vim_markdown_preview_github=1
+"}}}
 
