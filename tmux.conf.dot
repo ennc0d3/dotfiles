@@ -33,27 +33,17 @@ bind-key C-a last-window
 # open a man page in new window
 bind-key / command-prompt "split-window 'exec man %%'"
 
-# quick view of processes
-bind-key "~" split-window "exec top"
-
 # scrollback buffer n lines
 set -g history-limit 5000
 
 # listen for activity on all windows
 set -g bell-action any
-#set -g bell-action none
 
 # start window indexing at zero (default)
-set -g base-index 0
-
-# instructs tmux to expect UTF-8 sequences
-#setw -g utf8 on
-#set -g status-utf8 on
-
-#set-option -ga terminal-overrides ',*:enacs@:smacs@:rmacs@:acsc@'
+set -g base-index 1
 
 # tell tmux to use 256 colour terminal
-set -g default-terminal "screen-256color"
+set-option -g default-terminal screen-256color
 
 # xterm-style function key sequences
 setw -g xterm-keys on
@@ -64,17 +54,11 @@ setw -g automatic-rename off
 # enable wm window titles
 set -g set-titles on
 
-# wm window title string (uses statusbar variables)
-#set -g set-titles-string "tmux.#I.#W"
-
-# don't close windows. just deactivate them. use respawn-window to reactivate.
-#setw -g remain-on-exit on
-
 
 # Key bindings
 
 # reload settings
-bind-key R source-file ~/.tmux.conf
+bind-key "~" source-file ~/.tmux.conf \; display-message "tmux.conf reloaded."
 
 # detach client
 bind-key d detach
@@ -114,15 +98,10 @@ bind-key -n "C-Right" select-window -t :+
 bind-key -n "C-Up"   select-pane -t :.-
 bind-key -n "C-Down" select-pane -t :.+
 
-# Cycle to next pane
-bind-key -r Tab select-pane -t :.+
-
 # kill current pane/window
 bind-key q confirm-before kill-pane
 bind-key Q confirm-before kill-window
 bind-key C-q confirm-before kill-pane
-#bind-key x kill-pane
-#bind-key X kill-window
 
 # copying and pasting
 bind-key [ copy-mode
@@ -133,6 +112,8 @@ setw -g mode-keys vi
 
 # enable mouse selection in copy mode
 set -g mouse on
+set -g mouse-select-pane on
+set -g mouse-resize-pane on
 
 # list all paste buffers (default key is '#')
 bind-key b list-buffers
@@ -142,7 +123,6 @@ bind-key p choose-buffer
 
 # delete the most recently copied buffer of text (default key was '-')
 bind-key x delete-buffer
-
 
 # Screen-like key bindings
 
@@ -167,15 +147,29 @@ bind-key \ confirm-before kill-server
 bind-key * list-clients
 
 # redisplay (default key in tmux is 'r')
-#bind-key l refresh-client
+bind-key : command-prompt
 bind-key r refresh-client
+bind-key L clear-history
 
 
 # Split windows like vim
 
-# vim's definition of a horizontal/vertical split is reversed from tmux's
-#bind-key s split-window -v
-#bind-key v split-window -h
+# use vim-like keys for windows splits
+bind-key s split-window -v
+bind-key v split-window -h
+bind-key h select-pane -L
+bind-key j select-pane -D
+bind-key k select-pane -U
+bind-key l select-pane -R
+
+# smart pane switching with awareness of vim splits
+bind -n C-h run "(tmux display-message -p '#{pane_current_command}' | grep -iqE '(^|\/)vim$' && tmux send-keys C-h) || tmux select-pane -L"
+bind -n C-j run "(tmux display-message -p '#{pane_current_command}' | grep -iqE '(^|\/)vim$' && tmux send-keys C-j) || tmux select-pane -D"
+bind -n C-k run "(tmux display-message -p '#{pane_current_command}' | grep -iqE '(^|\/)vim$' && tmux send-keys C-k) || tmux select-pane -U"
+bind -n C-l run "(tmux display-message -p '#{pane_current_command}' | grep -iqE '(^|\/)vim$' && tmux send-keys C-l) || tmux select-pane -R"
+bind -n C-\ run "(tmux display-message -p '#{pane_current_command}' | grep -iqE '(^|\/)vim$' && tmux send-keys 'C-\\') || tmux select-pane -l"
+bind C-l send-keys 'C-l'
+
 
 # alternatively, use better mnemonics for horizontal/vertical splits
 bind-key - split-window -v
@@ -222,15 +216,60 @@ set -g message-bg black
 set -g message-attr bright
 
 
+bind-key + select-layout main-horizontal
+bind-key = select-layout main-vertical
+set-window-option -g other-pane-height 25
+set-window-option -g other-pane-width 80
+
+bind-key a last-pane
+bind-key q display-panes
+bind-key c new-window
+bind-key t next-window
+bind-key T previous-window
+
+bind-key [ copy-mode
+bind-key ] paste-buffer
+
+# Setup 'v' to begin selection as in Vim
+bind-key -t vi-copy v begin-selection
+bind-key -t vi-copy y copy-pipe "reattach-to-user-namespace pbcopy"
+
+# Update default binding of `Enter` to also use copy-pipe
+unbind -t vi-copy Enter
+bind-key -t vi-copy Enter copy-pipe "reattach-to-user-namespace pbcopy"
+
+set-window-option -g display-panes-time 1500
+
+# Status Bar
+set-option -g status-interval 1
+set-option -g status-left ''
+set-option -g status-right '%l:%M%p'
+set-window-option -g window-status-current-fg magenta
+set-option -g status-fg default
+
+# Status Bar solarized-dark (default)
+set-option -g status-bg black
+set-option -g pane-active-border-fg yellow
+set-option -g pane-border-fg cyan
+
+# Status Bar solarized-light
+if-shell "[ \"$COLORFGBG\" = \"11;15\" ]" "set-option -g status-bg white"
+if-shell "[ \"$COLORFGBG\" = \"11;15\" ]" "set-option -g pane-active-border-fg white"
+if-shell "[ \"$COLORFGBG\" = \"11;15\" ]" "set-option -g pane-border-fg white"
+
+# Set window notifications
+setw -g monitor-activity on
+set -g visual-activity on
+
+# Allow the arrow key to be used immediately after changing windows
+set-option -g repeat-time 0
+
 # -----------------------------------------------------------------------------
 # vim: fen fdl=0 fdm=marker
 
-set -g status-right-length 100
-set -g status-right '#[fg=green] #T#[default]'
-
 # Synchronixe panes
-bind-key s setw synchronize-panes on
-bind-key t setw synchronize-panes off
+bind-key C-s setw synchronize-panes on
+bind-key C-t setw synchronize-panes off
 
 
 # Tmux plugin manager
@@ -239,6 +278,8 @@ set -g @plugin 'tmux-plugins/tpm'
 set -g @plugin 'tmux-plugins/tmux-resurrect'
 set -g @plugin 'tmux-plugins/tmux-continuum'
 
+# vim-tmux-navigator
+set -g @plugin 'christoomey/vim-tmux-navigator'
 
 # Enable automatic restore
 set -g @continuum-restore 'on'
