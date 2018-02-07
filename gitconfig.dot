@@ -1,0 +1,31 @@
+[user]
+	email = nagarajan.ganesan@ericsson.com
+	name = Nagarajan Ganesan
+
+[core]
+	editor = vim
+
+[color]
+    ui = true
+
+[color "branch"]
+    current = yellow reverse
+    local = yello
+    remote = green
+
+[color "diff"]
+    meta = yellow bold
+    frag = magenta bold
+    old = red bold
+    new = green bold
+
+[color "status"]
+    added = yellow
+    changed = green
+    untracked = red
+
+[rerere]
+	enabled = true
+	autoupdate = true
+
+
