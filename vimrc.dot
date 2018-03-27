@@ -1,17 +1,25 @@
+"{{{ Experimental
+set enc=utf-8
+set fileencoding=utf-8
+scriptencoding utf-8
+"}}}
+
 set nocompatible              " be iMproved, required
 filetype off                  " required
+
 
 set rtp+=~/.vim/bundle/Vundle.vim
 call vundle#begin()
    Plugin 'VundleVim/Vundle.vim'
    Plugin 'tpope/vim-fugitive'
    Plugin 'scrooloose/nerdtree'
-   Plugin 'scrooloose/syntastic'
+   Plugin 'vim-syntastic/syntastic'
    Plugin 'bronson/vim-trailing-whitespace'
    Plugin 'JamshedVesuna/vim-markdown-preview'
    Plugin 'altercation/vim-colors-solarized'
    Plugin 'christoomey/vim-tmux-navigator'
-   "Plugin 'Valloric/YouCompleteMe'
+   Plugin 'Yggdroot/indentLine'
+	Plugin 'fatih/vim-go'
 call vundle#end()
 
 filetype plugin indent on    " required
@@ -27,13 +35,14 @@ filetype plugin indent on    " required
 " Common setings{{{
 let mapleader=","
 set nowrap        " don't wrap lines
+set expandtab
 set tabstop=3     " a tab is four spaces
+set shiftwidth=3  " number of spaces to use for autoindenting
 set backspace=indent,eol,start
                   " allow backspacing over everything in insert mode
 set autoindent    " always set autoindenting on
 set copyindent    " copy the previous indentation on autoindenting
 set number        " always show line numbers
-set shiftwidth=3  " number of spaces to use for autoindenting
 set shiftround    " use multiple of shiftwidth when indenting with '<' and '>'
 set showmatch     " set show matching parenthesis
 set ignorecase    " ignore case when searching
@@ -55,13 +64,17 @@ set nobackup
 set noswapfile
 
 set list
-set listchars=tab:▸\ ,eol:¬
-set expandtab
+set listchars=tab:→\ ,trail:∙,nbsp:•,eol:¬
 autocmd filetype html,xml set listchars-=tab:>.
+
+" show invisible
+set list listchars=tab:▸\ ,trail:·,precedes:←,extends:→,eol:↲,nbsp:␣
+" hi NonText ctermfg=16 guifg=#4a4a59
+" hi SpecialKey ctermfg=16 guifg=#4a4a59
 " }}}
 "
 " Autocmd for aterating defaults {{{
-autocmd filetype python set expandtab
+" autocmd filetype python set expandtab
 " }}}
 "
 "
@@ -89,8 +102,8 @@ let vim_markdown_preview_toggle=3
 "
 "{{{
 " Ctags
-set tags+=~/git/coremw/.vim/tags/cpp
-set tags+=~/git/coremw/src/tags
+set tags+=~/git/cmcore/.vim/tags/cpp
+set tags+=~/git/cmcore/src/tags
 map <C-F12>: !ctags -R --sort=yes --c++kinds=+p --fields=+iaS --extra=+q .<CR>
 
 " OmniCppComplete
@@ -109,11 +122,21 @@ au BufNewFile,BufRead,BufEnter *.cpp,*.hpp set omnifunc=omni#cpp#complete#Main
 
 ""}}}
 
-if filereadable("~/git/coremw/.vim/cscope.out")
-   cs add ~/git/coremw/.vim/cscope.out ~/git/coremw
+" {{{
+" For IdentLine plugin
+" :IndentToggle
+set softtabstop=3 " makes the spaces feel like real tabs
+" let g:indentLine_color_term = 239
+" let g:indentLine_char = '|'
+" }}}
+
+
+if filereadable("~/git/cmcore/.vim/cscope.out")
+   cs add ~/git/cmcore/.vim/cscope.out ~/git/coremw
 elseif $CSCOPE_DB != ""
    cs add $CSCOPE_DB
 endif
+
 
 
 

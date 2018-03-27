@@ -112,8 +112,8 @@ setw -g mode-keys vi
 
 # enable mouse selection in copy mode
 set -g mouse on
-set -g mouse-select-pane on
-set -g mouse-resize-pane on
+#set -g mouse-select-pane on
+#set -g mouse-resize-pane on
 
 # list all paste buffers (default key is '#')
 bind-key b list-buffers

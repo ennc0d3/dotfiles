@@ -8,5 +8,7 @@ HISTFILESIZE=20000
 #tty -s && exec zsh
 
 # CC options
-export CC="ccache gcc"
-export CXX="ccache g++"
+#export CC="ccache gcc"
+#export CXX="ccache g++"
+
+alias myssh='ssh -oStrictHostKeyChecking -oUserKnownHostsFile=/dev/null'
