@@ -1,24 +1,16 @@
-"{{{ Experimental
-set enc=utf-8
-set fileencoding=utf-8
-scriptencoding utf-8
-"}}}
-
 set nocompatible              " be iMproved, required
 filetype off                  " required
-
 
 set rtp+=~/.vim/bundle/Vundle.vim
 call vundle#begin()
    Plugin 'VundleVim/Vundle.vim'
    Plugin 'tpope/vim-fugitive'
    Plugin 'scrooloose/nerdtree'
-   Plugin 'vim-syntastic/syntastic'
+   Plugin 'scrooloose/syntastic'
    Plugin 'bronson/vim-trailing-whitespace'
    Plugin 'JamshedVesuna/vim-markdown-preview'
    Plugin 'altercation/vim-colors-solarized' "<<-FIX: Remove thiszz/flazz/:
    Plugin 'christoomey/vim-tmux-navigator'
-   Plugin 'Yggdroot/indentLine'
    " If complains about YcmRestartServer, better run install.py
    " ~/.vim/vundle/YouCompleteMe/install.py --help
    " ~/.vim/vundle/YouCompleteMe/install.py --clang-completer --go-completer
@@ -80,13 +72,9 @@ set nobackup
 set noswapfile
 
 set list
-set listchars=tab:→\ ,trail:∙,nbsp:•,eol:¬
+set listchars=tab:▸\ ,eol:¬
+set expandtab
 autocmd filetype html,xml set listchars-=tab:>.
-
-" show invisible
-set list listchars=tab:▸\ ,trail:·,precedes:←,extends:→,eol:↲,nbsp:␣
-" hi NonText ctermfg=16 guifg=#4a4a59
-" hi SpecialKey ctermfg=16 guifg=#4a4a59
 " }}}
 "
 " Autocmd for aterating defaults {{{
@@ -120,8 +108,8 @@ let vim_markdown_preview_toggle=3
 "
 "{{{
 " Ctags
-set tags+=~/git/cmcore/.vim/tags/cpp
-set tags+=~/git/cmcore/src/tags
+set tags+=~/git/coremw/.vim/tags/cpp
+set tags+=~/git/coremw/src/tags
 map <C-F12>: !ctags -R --sort=yes --c++kinds=+p --fields=+iaS --extra=+q .<CR>
 
 " OmniCppComplete
@@ -140,21 +128,16 @@ au BufNewFile,BufRead,BufEnter *.cpp,*.hpp set omnifunc=omni#cpp#complete#Main
 
 ""}}}
 
-" {{{
-" For IdentLine plugin
-" :IndentToggle
-set softtabstop=3 " makes the spaces feel like real tabs
-" let g:indentLine_color_term = 239
-" let g:indentLine_char = '|'
-" }}}
-
-
-if filereadable("~/git/cmcore/.vim/cscope.out")
-   cs add ~/git/cmcore/.vim/cscope.out ~/git/coremw
+if filereadable("~/git/coremw/.vim/cscope.out")
+   cs add ~/git/coremw/.vim/cscope.out ~/git/coremw
 elseif $CSCOPE_DB != ""
    cs add $CSCOPE_DB
 endif
 
+" {{{ enN
+set exrc " To source .vimrc if present in cwd, to enable project-specific configuration
+set secure " Secure it, restrict unsafe commands from non-default vimrc
+" }}}
 
 
 " {{{ vim-go customization
