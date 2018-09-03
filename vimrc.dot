@@ -1,4 +1,4 @@
-"{{{ Experimental
+"{{{ encoding
 set enc=utf-8
 set fileencoding=utf-8
 scriptencoding utf-8
@@ -6,7 +6,6 @@ scriptencoding utf-8
 
 set nocompatible              " be iMproved, required
 filetype off                  " required
-
 
 set rtp+=~/.vim/bundle/Vundle.vim
 call vundle#begin()
@@ -19,23 +18,26 @@ call vundle#begin()
    Plugin 'altercation/vim-colors-solarized' "<<-FIX: Remove thiszz/flazz/:
    Plugin 'christoomey/vim-tmux-navigator'
    Plugin 'Yggdroot/indentLine'
-   " If complains about YcmRestartServer, better run install.py
-   " ~/.vim/vundle/YouCompleteMe/install.py --help
    " ~/.vim/vundle/YouCompleteMe/install.py --clang-completer --go-completer
    Plugin 'Valloric/YouCompleteMe'
-   " Added for go <-start
+   "{{{ golang
    Plugin 'fatih/vim-go', { 'do': ':GoInstallBinaries' }
    Plugin 'fatih/molokai'
+   " go}}}
    Plugin 'AndrewRadev/splitjoin.vim'
    Plugin 'SirVer/ultisnips'
    Plugin 'honza/vim-snippets'
    Plugin 'ctrlpvim/ctrlp.vim'
    Plugin 'ekalinin/Dockerfile.vim'
-   " Added for go <-end
    Plugin 'flazz/vim-colorschemes'
    Plugin 'vim-airline/vim-airline'
    Plugin 'vim-airline/vim-airline-themes'
    Plugin 'tpope/vim-unimpaired'
+   Plugin 'tpope/vim-repeat'
+   "{{{ python
+   Plugin 'vim-scripts/indentpython.vim'
+   Plugin 'nvie/vim-flake8'
+   " python}}}
 call vundle#end()
 
 filetype plugin indent on    " required
@@ -95,8 +97,8 @@ set list listchars=tab:▸\ ,trail:·,precedes:←,extends:→,eol:↲,nbsp:␣
 "
 " Mapped Keys {{{
 nmap <leader>l :set list!<CR>
-nmap <silent> <leader>ev :e $MYVIMRC<CR>     "edit .vimrc
-nmap <silent> <leader>sv :so $MYVIMRC<CR>    "source .vimrc
+nnoremap <leader>ev :e $MYVIMRC<CR>
+nnoremap <leader>rv :source $MYVIMRC<CR>
 " }}}
 "
 "
@@ -106,6 +108,8 @@ nmap <silent> <leader>sv :so $MYVIMRC<CR>    "source .vimrc
 "NERDTree
 noremap <Leader>f :NERDTreeToggle<Enter>
 nnoremap <silent> <Leader>v :NERDTreeFind<CR>
+let NERDTreeIgnore=['\.pyc$', '\~$'] "ignore files in NERDTree
+
 
 "
 " vim-markdown-preview {{{
@@ -119,10 +123,6 @@ let vim_markdown_preview_toggle=3
 "}}}
 "
 "{{{
-" Ctags
-set tags+=~/git/cmcore/.vim/tags/cpp
-set tags+=~/git/cmcore/src/tags
-map <C-F12>: !ctags -R --sort=yes --c++kinds=+p --fields=+iaS --extra=+q .<CR>
 
 " OmniCppComplete
 let OmniCpp_NamespaceSearch = 1
@@ -149,22 +149,17 @@ set softtabstop=3 " makes the spaces feel like real tabs
 " }}}
 
 
-if filereadable("~/git/cmcore/.vim/cscope.out")
-   cs add ~/git/cmcore/.vim/cscope.out ~/git/coremw
-elseif $CSCOPE_DB != ""
-   cs add $CSCOPE_DB
-endif
-
-
 
 " {{{ vim-go customization
 " https://github.com/fatih/vim-go-tutorial#quick-setup
 " gofmt and rewrite the import declarations
+" vendor packages not working, trying with -srcdir .
 let g:go_fmt_command = "goimports"
+
+let g:go_autodetect_gopath = 1
+
 "
 autocmd BufNewFile,BufRead *.go setlocal expandtab tabstop=4 softtabstop=4 shiftwidth=4
-set rtp+=$GOPATH/src/github.com/golang/lint/misc/vim
-autocmd BufWritePost,FileWritePost *.go execute 'GoLint' | cwindow
 " }}}
 
 " {{{ Added 01/sep/1028
@@ -177,14 +172,6 @@ map <C-n> :cnext<CR>
 map <C-m> :cprevious<CR>
 nnoremap <leader>a :cclose<CR>
 
-" Shortcuts for building Go programs
-" autocmd FileType go nmap <leader>b <Plug>(go-build)
-" autocmd FileType go nmap <leader>r <Plug>(go-run)
-autocmd FileType go nmap <leader>t <Plug>(go-test)
-autocmd FileType go nmap <leader>c <Plug>(go-coverage-toggle)
-autocmd FileType go nmap <leader>i <Plug>(go-info)
-
-
 " run :GoBuild or :GoTestCompile based on the go file
 function! s:build_go_files()
   let l:file = expand('%')
@@ -195,7 +182,11 @@ function! s:build_go_files()
   endif
 endfunction
 
+" Shortcuts for building Go programs
 autocmd FileType go nmap <leader>b :<C-u>call <SID>build_go_files()<CR>
+autocmd FileType go nmap <leader>t <Plug>(go-test)
+autocmd FileType go nmap <leader>c <Plug>(go-coverage-toggle)
+autocmd FileType go nmap <leader>i <Plug>(go-info)
 
 
 autocmd Filetype go command! -bang A call go#alternate#Switch(<bang>0, 'edit')
@@ -223,7 +214,7 @@ let g:go_metalinter_autosave_enabled = ['vet', 'golint']
 let g:go_metalinter_deadline = "5s"
 
 " use godef instead of guru, FIXME: Find which is better for you
-let g:go_def_mode = 'godef'
+let g:go_def_mode = 'guru'
 let g:go_auto_type_info = 1
 let g:go_auto_sameids = 1
 set updatetime=100
@@ -235,6 +226,8 @@ filetype plugin indent on
 " make YCM compatible with UltiSnips (using supertab)
 let g:ycm_key_list_select_completion = ['<C-n>', '<Down>']
 let g:ycm_key_list_previous_completion = ['<C-p>', '<Up>']
+let g:ycm_autoclose_preview_window_after_completion=1
+map <leader>g  :YcmCompleter GoToDefinitionElseDeclaration<CR>
 let g:SuperTabDefaultCompletionType = '<C-n>'
 
 " Trigger configuration. Do not use <tab> if you use https://github.com/Valloric/YouCompleteMe.
@@ -246,11 +239,7 @@ let g:UltiSnipsJumpBackwardTrigger="<c-z>"
 let g:UltiSnipsEditSplit="vertical"
 
 
-
-
-
 " Check :help go-settings
-
 
 " Trial, remove them after
 let g:rehash256 = 1
@@ -271,4 +260,30 @@ set laststatus=2
 " close help buffer using q
 autocmd FileType help noremap <buffer> q :q<cr>
 " }}}
+"
+"
+"{{{ Added for python
+" Show unnecessary whitespace
+highlight BadWhitespace ctermbg=red guibg=red
+
+au BufRead,BufNewFile *.py,*.pyw,*.c,*.h match BadWhitespace /\s\+$/
+au FileType py set autoindent
+au FileType py set smartindent
+au FileType py set textwidth=79 " PEP-8 Friendly
+
+let python_highlight_all=1
+syntax on
+
+ " Sort imports
+
+" python with virtualenv support
+py << EOF
+import os
+import sys
+if 'VIRTUAL_ENV' in os.environ:
+	project_base_dir = os.environ['VIRTUAL_ENV']
+	activate_this = os.path.join(project_base_dir, 'bin/activate_this.py')
+	execfile(activate_this, dict(__file__=activate_this))
+EOF
+"}}}
 
