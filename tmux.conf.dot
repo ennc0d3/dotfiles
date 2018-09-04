@@ -112,8 +112,6 @@ setw -g mode-keys vi
 
 # enable mouse selection in copy mode
 set -g mouse on
-#set -g mouse-select-pane on
-#set -g mouse-resize-pane on
 
 # list all paste buffers (default key is '#')
 bind-key b list-buffers
@@ -247,16 +245,6 @@ set-option -g status-right '%l:%M%p'
 set-window-option -g window-status-current-fg magenta
 set-option -g status-fg default
 
-# Status Bar solarized-dark (default)
-set-option -g status-bg black
-set-option -g pane-active-border-fg yellow
-set-option -g pane-border-fg cyan
-
-# Status Bar solarized-light
-if-shell "[ \"$COLORFGBG\" = \"11;15\" ]" "set-option -g status-bg white"
-if-shell "[ \"$COLORFGBG\" = \"11;15\" ]" "set-option -g pane-active-border-fg white"
-if-shell "[ \"$COLORFGBG\" = \"11;15\" ]" "set-option -g pane-border-fg white"
-
 # Set window notifications
 setw -g monitor-activity on
 set -g visual-activity on
@@ -277,6 +265,13 @@ bind-key C-t setw synchronize-panes off
 set -g @plugin 'tmux-plugins/tpm'
 set -g @plugin 'tmux-plugins/tmux-resurrect'
 set -g @plugin 'tmux-plugins/tmux-continuum'
+set -g @plugin 'jimeh/tmux-themepack'
+
+# Renumber window indexes
+set-option -g renumber-windows on
+
+# Choose theme
+set -g @themepack 'powerline/block/blue'
 
 # vim-tmux-navigator
 set -g @plugin 'christoomey/vim-tmux-navigator'
@@ -291,5 +286,3 @@ set -g @resurrect-restore 'R'
 # Initialize the Tmux plugin manager (Note: Should be the last line)
 run '~/.tmux/plugins/tpm/tpm'
 
-# Renumber window indexes
-set-option -g renumber-windows on
