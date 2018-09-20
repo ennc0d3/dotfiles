@@ -6,7 +6,6 @@ call vundle#begin()
    Plugin 'VundleVim/Vundle.vim'
    Plugin 'tpope/vim-fugitive'
    Plugin 'scrooloose/nerdtree'
-  " Plugin 'vim-syntastic/syntastic' "TODO: use ale
    Plugin 'bronson/vim-trailing-whitespace'
    Plugin 'JamshedVesuna/vim-markdown-preview'
    Plugin 'altercation/vim-colors-solarized'
@@ -18,9 +17,9 @@ call vundle#begin()
    Plugin 'Valloric/YouCompleteMe'
    "{{{ golang
    Plugin 'fatih/vim-go', { 'do': ':GoInstallBinaries' }
-
-   " go}}}
-   Plugin 'AndrewRadev/splitjoin.vim'
+   " go}}}A
+   " Use gS, gJ
+   Plugin 'AndrewRadev/splitjoin.vim' "
    Plugin 'SirVer/ultisnips'
    Plugin 'honza/vim-snippets'
    Plugin 'ctrlpvim/ctrlp.vim'
@@ -29,15 +28,18 @@ call vundle#begin()
    Plugin 'vim-airline/vim-airline-themes'
    Plugin 'tpope/vim-unimpaired'
    Plugin 'tpope/vim-repeat'
+   " Use cs"' ds"'
+   Plugin 'tpope/vim-surround'
    Plugin 'majutsushi/tagbar'
    Plugin 'w0rp/ale'
    " yaml
-   Plugin 'chase/vim-ansible-yaml'
+   Plugin 'mrk21/yaml-vim'
+   " Used for coerce, crs, crm, crc,cru ( coerce to snake, mixed, camel,
+   " upper,etc
+   Plugin 'tpope/vim-abolish'
    " Python
-   Plugin 'klen/python-mode'
-   Plugin 'Vimjas/vim-python-pep8-indent'
-   Plugin 'nvie/vim-flake8' "FIXME: Did I use  this?
-   Plugin 'pignacio/vim-yapf-format' "FIXME: Do I use this?
+   Plugin 'python-mode/python-mode'
+   "ale_yapf
 
    Plugin 'TaskList.vim' "TODO: Did i use this?
    Plugin 'jceb/vim-orgmode' "TODO: Might use this, for the course
@@ -61,7 +63,7 @@ syntax on
 "
 " Common setings{{{
 let mapleader=","
-set clipboard=unamed "CHECKME: Is copying working
+"set clipboard=unamed "CHECKME: Is copying working
 set nowrap        " don't wrap lines
 set tabstop=4     " a tab is four spaces
 set shiftwidth=4  " number of spaces to use for autoindenting
@@ -71,6 +73,7 @@ set backspace=indent,eol,start
 set autoindent    " always set autoindenting on
 set copyindent    " copy the previous indentation on autoindenting
 set number        " always show line numbers
+set relativenumber " Show relative number
 set shiftround    " use multiple of shiftwidth when indenting with '<' and '>'
 set showmatch     " set show matching parenthesis
 set ignorecase    " ignore case when searching
@@ -91,8 +94,11 @@ set visualbell           " don't beep
 set noerrorbells         " don't beep
 
 set nobackup
+set nowritebackup
 set noswapfile
-
+set ruler			"Show cursor's current col and line number
+set autoread		"Reload buffer if file was modified in another buffer
+set shortmess+=I	  "Suppress startup message on vim
 set list
 set listchars=tab:→\ ,trail:∙,nbsp:•,eol:¬
 autocmd filetype html,xml set listchars-=tab:>.
@@ -109,6 +115,9 @@ set list listchars=tab:▸\ ,trail:·,precedes:←,extends:→,eol:↲,nbsp:␣
 "
 " Mapped Keys {{{
 nmap <leader>l :set list!<cr>
+nmap <leader>w :w<cr> "Write file
+nmap <leader>wq :wq<cr> "Write and quiteifile
+nmap <leader>q :q<cr> "Quit file
 nnoremap <leader>ev :vsplit $MYVIMRC<cr>
 nnoremap <leader>sv :source $MYVIMRC<cr>
 " }}}
@@ -133,7 +142,7 @@ noremap <Leader>T :TagbarToggle<Enter>
 let vim_markdown_preview_github=1
 " 0, not on buffer write 1 - display image on ctrl-p, 2 - preview on write
 " with image, 3- preview on write without image rendering
-let vim_markdown_preview_toggle=3
+let vim_markdown_preview_toggle=0
 "}}}
 "
 "{{{
@@ -171,6 +180,7 @@ set softtabstop=4 " makes the spaces feel like real tabs
 let g:go_fmt_command = "goimports"
 let g:go_autodetect_gopath = 1
 
+
 "
 autocmd BufNewFile,BufRead *.go setlocal expandtab tabstop=4 softtabstop=4 shiftwidth=4
 " }}}
@@ -200,6 +210,12 @@ autocmd FileType go nmap <leader>b :<C-u>call <SID>build_go_files()<cr>
 autocmd FileType go nmap <leader>t <Plug>(go-test)
 autocmd FileType go nmap <leader>c <Plug>(go-coverage-toggle)
 autocmd FileType go nmap <leader>i <Plug>(go-info)
+autocmd FileType go nmap <C-]> :GoDef<cr>
+autocmd FileType go nmap <C-t> :GoDefPop<cr>
+autocmd FileType go nmap <C-T> :GoDefStack<cr>
+autocmd FileType go nmap <C-c> :GoCallers<cr>
+autocmd FileType go nmap <C-C> :GoCallStack<cr>
+
 
 
 autocmd Filetype go command! -bang A call go#alternate#Switch(<bang>0, 'edit')
@@ -241,7 +257,7 @@ let g:go_metalinter_deadline = "5s"
  """
 
 " use godef instead of guru, FIXME: Find which is better for you
-let g:go_def_mode = 'guru'
+let g:go_def_mode = 'godef'
 let g:go_auto_type_info = 1
 let g:go_auto_sameids = 1
 
@@ -253,6 +269,10 @@ set updatetime=100
 filetype plugin indent on
 
 " make YCM compatible with UltiSnips (using supertab)
+nnoremap <leader>y :let g:ycm_auto_trigger=0<CR>                " turn " off YCM
+nnoremap <leader>Y :let g:ycm_auto_trigger=1<CR>                "turn on
+" YCM
+let g:ycm_auto_trigger=1 " Ycm better than pymode?
 let g:ycm_key_list_select_completion = ['<C-n>', '<Down>']
 let g:ycm_key_list_previous_completion = ['<C-p>', '<Up>']
 let g:ycm_autoclose_preview_window_after_completion=1
@@ -267,9 +287,9 @@ let g:SuperTabDefaultCompletionType = '<C-n>'
 
 " Trigger configuration. Do not use <tab> if you use https://github.com/Valloric/YouCompleteMe.
 let g:UltiSnipsExpandTrigger="<tab>"
-let g:UltiSnipsJumpForwardTrigger="<c-b>"
-let g:UltiSnipsJumpBackwardTrigger="<c-z>"
-let g:UtliSnipsListSnippetes = "<c-k>"
+let g:UltiSnipsJumpForwardTrigger="<c-j>"
+let g:UltiSnipsJumpBackwardTrigger="<c-k>"
+let g:UtliSnipsListSnippets = "<c-l>"
 
 " If you want :UltiSnipsEdit to split your window.
 let g:UltiSnipsEditSplit="vertical"
@@ -315,6 +335,7 @@ set splitbelow
 set splitright
 
 " Yaml
+au! BufNewFile,BufReadPost *.{yaml,yml} set filetype=yaml foldmethod=indent
 autocmd FileType yaml setlocal ts=2 sts=2 sw=2 expandtab
 
 " VIM, navigating between the panes
@@ -328,12 +349,13 @@ nnoremap <cr> <C-w><C-w>
 " {{{
 " Python IDE
 "
+" Use Ale yapf
 " https://github.com/pignacio/vim-yapf-format
-map <leader>F :YapfFullFormat<cr>
-imap <leader>F :YapfFormat<cr>
-vmap <leader>F :YapfFormat<cr>
+"map <leader>F :YapfFullFormat<cr>
+"imap <leader>F :YapfFormat<cr>
+"vmap <leader>F :YapfFormat<cr>
 " diasable, default is to move the cursor to the fault location
-let g:yapf_format_move_to_error = 0
+"let g:yapf_format_move_to_error = 0
 
 
 "https://github.com/Valloric/YouCompleteMe#python-semantic-completion
@@ -373,10 +395,39 @@ iabbrev @@ ennc0d3@gmail.com
 inoremap jk <esc>
 inoremap <esc> <nop>
 
+
+"
+"python formatter:
+" What to choose? yapf vs autopep8 vs black
+" Seems like black is good, similar to gofmt ( without options)
+" autopep8 definitely no, Choose between yapf or black
+"
 " Few pints of ale
 " Run only after save,
 let g:ale_lint_on_text_change = 'never'
 let g:ale_lint_on_enter = 0
+
+let g:ale_linters = {}
+let g:ale_linters.python = ['flake8', 'pycodestyle']
+
+
+" Ale settings
+let g:ale_fixers = {
+	\ '*': ['remove_trailing_lines', 'trim_whitespace'],
+	\ 'python': ['yapf', 'isort', 'black'],
+	\ 'yaml': ['yamllint']
+    \ }
+let g:ale_fixers.python = ['yapf', 'autopep8', 'isort']
+nmap <silent> [s <Plug>(ale_previous_wrap)
+nmap <silent> ]s <Plug>(ale_next_wrap)
+nmap <leader>= <Plug>(ale_fix)
+nmap <leader>+ :let b:ale_enabled=1<cr>
+
+"Disable Ale for the following file patterns
+let g:ale_pattern_options = {
+	\ '.*\.txt$': { 'ale_enabled': 0 },
+	\ '.*\.rst$': { 'ale_enabled': 0 },
+	\}
 "
 " Plugins need to be added to runtimepath before helptags can be generated.
 packloadall
@@ -385,6 +436,27 @@ packloadall
 silent! helptags ALL
 
 "
+"
+let g:pymode=0
+let g:pymode_python='python'
+let g:pymode_syntax=1
+let g:pymode_syntax_all=1
+let g:pymode_syntax_indent_errors=1
+let g:pymode_syntax_space_errors=1
+let g:pymode_options_colorcolumn = 1
+let g:pymode_doc = 1
+let g:pymode_doc_bind = 'K'
+let g:pymode_virtualenv = 1
+let g:pymode_lint = 0 "Disabled in favour of ALE
+let g:pymode_rope = 1
+let g:pymode_rope_lookup_project = 0
+let g:pymode_rope_completion = 1
+let g:pymode_rope_completion_on_dot = 1
+let g:pymode_rope_completion_bind = '<C-space>'
+let g:pymode_rope_autoimport = 1
+let g:pymode_rope_goto_definition_bind = '<C-c>g'
+let g:pymode_rope_rename_bindi = '<C-c>rr'
+let g:pymode_rope_organize_imports_bind = '<C-c>ro'
 ""
 "My lessons on vim!
 "* Learn to use :help, Google at last resort
@@ -401,5 +473,11 @@ silent! helptags ALL
 " Use python-mode
 " Use ale
 " check if python-mode rope conflict with ycm
+"
+"
+" NOTES:
+" q:  - Dynamic list of commands run in command mode aka history
+" :e <C-d> - List directories
+"  [count] {operator} {[count] motion|text object}
 
 

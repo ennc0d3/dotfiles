@@ -34,6 +34,7 @@ for f in $(ls -1 $package_root/*.dot); do
 	ln -s $f ~/.${target_f} > /dev/null 2>&1
 done
 
+
 info "Install vundle"
 clone_or_pull $github_vundle_loc $vim_bundle_root/Vundle.vim
 
