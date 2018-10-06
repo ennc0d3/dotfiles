@@ -297,4 +297,3 @@ set -g @resurrect-restore 'R'
 
 # Initialize the Tmux plugin manager (Note: Should be the last line)
 run '~/.tmux/plugins/tpm/tpm'
-

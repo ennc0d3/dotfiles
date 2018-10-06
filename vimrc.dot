@@ -5,9 +5,8 @@ set rtp+=~/.vim/bundle/Vundle.vim
 call vundle#begin()
    Plugin 'VundleVim/Vundle.vim'
    Plugin 'tpope/vim-fugitive'
-   Plugin 'scrooloose/nerdtree'
+   "Plugin 'scrooloose/nerdtree'
    Plugin 'bronson/vim-trailing-whitespace'
-   Plugin 'JamshedVesuna/vim-markdown-preview'
    Plugin 'altercation/vim-colors-solarized'
    Plugin 'christoomey/vim-tmux-navigator'
    Plugin 'Yggdroot/indentLine'
@@ -17,7 +16,7 @@ call vundle#begin()
    Plugin 'Valloric/YouCompleteMe'
    "{{{ golang
    Plugin 'fatih/vim-go', { 'do': ':GoInstallBinaries' }
-   " go}}}A
+   "}}}
    " Use gS, gJ
    Plugin 'AndrewRadev/splitjoin.vim' "
    Plugin 'SirVer/ultisnips'
@@ -28,6 +27,7 @@ call vundle#begin()
    Plugin 'vim-airline/vim-airline-themes'
    Plugin 'tpope/vim-unimpaired'
    Plugin 'tpope/vim-repeat'
+   Plugin 'airblade/vim-gitgutter'
    " Use cs"' ds"'
    Plugin 'tpope/vim-surround'
    Plugin 'majutsushi/tagbar'
@@ -39,11 +39,30 @@ call vundle#begin()
    Plugin 'tpope/vim-abolish'
    " Python
    Plugin 'python-mode/python-mode'
-   "ale_yapf
+   Plugin 'vim-scripts/indentpython.vim'
+   "SLOWS
+   "Plugin 'tmhedberg/SimpylFold'
 
    Plugin 'TaskList.vim' "TODO: Did i use this?
    Plugin 'jceb/vim-orgmode' "TODO: Might use this, for the course
 call vundle#end()
+
+"{{{
+set exrc
+set secure
+set showcmd "show last command enter of bottom right
+"SLOW
+set cursorline "highlight current line
+set wildmenu "visual auto complete for command menu
+set lazyredraw "redraw only when we need to
+"}}}
+"
+"{{{ cpp stuff
+augroup project
+     autocmd!
+     autocmd BufRead,BufNewFile *.h,*.c set filetype=c.doxygen
+augroup END
+"}}}
 
 "{{{ encoding
 set encoding=utf-8
@@ -70,12 +89,15 @@ set shiftwidth=4  " number of spaces to use for autoindenting
 set softtabstop=4 " a tab is four spaces
 set backspace=indent,eol,start
                   " allow backspacing over everything in insert mode
+set expandtab	  " always expand, noexpandtab is required only for makefile
 set autoindent    " always set autoindenting on
 set copyindent    " copy the previous indentation on autoindenting
 set number        " always show line numbers
-set relativenumber " Show relative number
+"SLOW?
+"set relativenumber " Show relative number
 set shiftround    " use multiple of shiftwidth when indenting with '<' and '>'
 set showmatch     " set show matching parenthesis
+set matchtime=0   " Avoid cursor to jump
 set ignorecase    " ignore case when searching
 set smartcase     " ignore case if search pattern is all lowercase,
                   "    case-sensitive otherwise
@@ -92,6 +114,7 @@ set wildignore+=.git,*.bmp,*.gif,*.jpg,*.png
 set title                " change the terminal's title
 set visualbell           " don't beep
 set noerrorbells         " don't beep
+set confirm				 " Display confirmation when closing an unsaved file
 
 set nobackup
 set nowritebackup
@@ -306,12 +329,12 @@ colorscheme molokai
 " For vim-airline, install powerline font
 " git clone https://github.com/powerline/fonts; cd fonts/; ./install.sh
 " Set terminal profile to use a powerline font of your choice
-
-let g:airline#extensions#tabline#enabled = 1
-let g:airline#extensions#syntastic#enabled = 1
-let g:airline_theme='powerlineish'
-let g:airline_powerline_fonts = 1
-set laststatus=2
+"SLOWS?
+"let g:airline#extensions#tabline#enabled = 1
+"let g:airline#extensions#syntastic#enabled = 1
+"let g:airline_theme='powerlineish'
+"let g:airline_powerline_fonts = 1
+"set laststatus=2
 
 " close help buffer using q
 autocmd FileType help noremap <buffer> q :q<cr>
@@ -349,13 +372,11 @@ nnoremap <cr> <C-w><C-w>
 " {{{
 " Python IDE
 "
-" Use Ale yapf
-" https://github.com/pignacio/vim-yapf-format
-"map <leader>F :YapfFullFormat<cr>
-"imap <leader>F :YapfFormat<cr>
-"vmap <leader>F :YapfFormat<cr>
-" diasable, default is to move the cursor to the fault location
-"let g:yapf_format_move_to_error = 0
+"
+set nofoldenable
+"set foldmethod=indent
+"set foldlevel=99
+"nnoremap <space> za
 
 
 "https://github.com/Valloric/YouCompleteMe#python-semantic-completion
@@ -408,15 +429,19 @@ let g:ale_lint_on_text_change = 'never'
 let g:ale_lint_on_enter = 0
 
 let g:ale_linters = {}
-let g:ale_linters.python = ['flake8', 'pycodestyle']
+let g:ale_linters.python = ['flake8', 'pylint', 'pycodestyle']
+let g:ale_python_pylint_options = '--rcfile ~/git/dotfiles/pylintrc'
 
 
 " Ale settings
+" ale_sh: Fixer shfmt (go get -u github.com/mdvan/sh/cmd/shcmd)
+let g:ale_fix_on_save=1
 let g:ale_fixers = {
 	\ '*': ['remove_trailing_lines', 'trim_whitespace'],
-	\ 'python': ['yapf', 'isort', 'black'],
-	\ 'yaml': ['yamllint']
-    \ }
+	\ 'python': ['yapf', 'isort', 'black', 'autopep8'],
+	\ 'sh': ['shfmt'],
+  \ }
+let g:ale_sh_shell_default_shell='bash'
 let g:ale_fixers.python = ['yapf', 'autopep8', 'isort']
 nmap <silent> [s <Plug>(ale_previous_wrap)
 nmap <silent> ]s <Plug>(ale_next_wrap)
@@ -448,7 +473,7 @@ let g:pymode_doc = 1
 let g:pymode_doc_bind = 'K'
 let g:pymode_virtualenv = 1
 let g:pymode_lint = 0 "Disabled in favour of ALE
-let g:pymode_rope = 1
+let g:pymode_rope = 0
 let g:pymode_rope_lookup_project = 0
 let g:pymode_rope_completion = 1
 let g:pymode_rope_completion_on_dot = 1
@@ -475,9 +500,42 @@ let g:pymode_rope_organize_imports_bind = '<C-c>ro'
 " check if python-mode rope conflict with ycm
 "
 "
+"
+" wayneye.com/vimrc
+"***Language specified***
+" shell (tab width 2 chr)
+"autocmd FileType sh set sw=2
+"autocmd FileType sh set ts=2
+"autocmd FileType sh set sts=2
+"autocmd FileType sh set textwidth=0 expandtab
+"autocmd FileType sh map <buffer> <C-S-e> :w<CR>:!/bin/sh % <CR>
+" YAML (tab width 2 chr, no wrapping)
+"autocmd FileType yaml set sw=2
+"autocmd FileType yaml set ts=2
+"autocmd FileType yaml set sts=2
+"autocmd FileType yaml set textwidth=0 expandtab
+" Python (tab width 4 chr)
+"autocmd FileType python set sw=4
+"autocmd FileType python set ts=4
+"autocmd FileType python set sts=4
+" Json (tab width 2 chr)
+"autocmd FileType json set sw=2
+"autocmd FileType json set ts=2
+"autocmd FileType json set sts=2
+"autocmd FileType json set textwidth=0 expandtab
+
+" Setup Omnicompletion
+" Messing with pymode?
+"autocmd FileType python set omnifunc=pythoncomplete#Complete
+"autocmd FileType html set omnifunc=htmlcomplete#CompleteTags
+"autocmd FileType xml set omnifunc=xmlcomplete#CompleteTags
+"autocmd FileType c set omnifunc=ccomplete#Complete
+"improve autocomplete menu color
+"highlight Pmenu ctermbg=238 gui=bold
+
+"
+"
 " NOTES:
 " q:  - Dynamic list of commands run in command mode aka history
 " :e <C-d> - List directories
 "  [count] {operator} {[count] motion|text object}
-
-

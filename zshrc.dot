@@ -1,13 +1,48 @@
-# If you come from bash you might have to change your $PATH.
-# export PATH=$HOME/bin:/usr/local/bin:$PATH
+# .zshrc file
+# ===============================
+# Change log
+# ===============================
+# 2017-11-16 11:11 ennc0d3@gmail.com
+#  - Initial version
+# 2018-10-06 17:51 ennc0d3@gmail.com
+#  - Overhaul after running zprof, startup <=200ms
+# Issues:
+#  - If its still slow, prefer moving to prezto, just uninstall oh-my-zsh and remove
+#     oh-my-zsh from this config
+# ===============================
+startTime=$(date "+%s%3N")
+
+# Prerequisites
+# sudo apt-get install fonts-powerline
+# git clone https://github.com/zsh-users/zsh-syntax-highlighting.git ${ZSH_CUSTOM:-~/.oh-my-zsh/custom}/plugins/zsh-syntax-highlighting
 
 # Path to your oh-my-zsh installation.
-  export ZSH=~/.oh-my-zsh
+export ZSH=$HOME/.oh-my-zsh
 
+#{{{ To profile startup, enable ZSH_PROFILE_STARTUP to true
+ZSH_PROFILE_STARTUP=false
+if [[ "$ZSH_PROFILE_STARTUP" == true ]]; then
+	# http://zsh.sourceforge.net/Doc/Release/Prompt-Expansion.html
+	PS4=$'%D{%M%S%.} %N:%i> '
+	exec 3>&2 2>/tmp/zsh-startlog.$$
+	setopt xtrace prompt_subst
+fi
+#}}}
+
+# If you come from bash you might have to change your $PATH.
+# export PATH=$HOME/bin:/usr/local/bin:$PATH
+#
 # Set name of the theme to load. Optionally, if you set this to "random"
 # it'll load a random theme each time that oh-my-zsh is loaded.
 # See https://github.com/robbyrussell/oh-my-zsh/wiki/Themes
-ZSH_THEME="robbyrussell"
+ZSH_THEME="bureau"
+
+# Set list of themes to load
+# Setting this variable when ZSH_THEME=random
+# cause zsh load theme from this variable instead of
+# looking in ~/.oh-my-zsh/themes/
+# An empty array have no effect
+# ZSH_THEME_RANDOM_CANDIDATES=( "robbyrussell" "agnoster" )
 
 # Uncomment the following line to use case-sensitive completion.
 # CASE_SENSITIVE="true"
@@ -17,10 +52,10 @@ ZSH_THEME="robbyrussell"
 # HYPHEN_INSENSITIVE="true"
 
 # Uncomment the following line to disable bi-weekly auto-update checks.
-DISABLE_AUTO_UPDATE="true"
+#DISABLE_AUTO_UPDATE="true"
 
 # Uncomment the following line to change how often to auto-update (in days).
-# export UPDATE_ZSH_DAYS=13
+#export UPDATE_ZSH_DAYS=13
 
 # Uncomment the following line to disable colors in ls.
 # DISABLE_LS_COLORS="true"
@@ -51,7 +86,17 @@ DISABLE_AUTO_TITLE="true"
 # Custom plugins may be added to ~/.oh-my-zsh/custom/plugins/
 # Example format: plugins=(rails git textmate ruby lighthouse)
 # Add wisely, as too many plugins slow down shell startup.
-plugins=(git kubectl tmux python docker)
+plugins=(
+	git
+	helm
+	vi-mode
+	colored-man-pages
+	tmux
+	minikube
+	docker
+	kubectl
+	zsh-syntax-highlighting
+)
 
 source $ZSH/oh-my-zsh.sh
 
@@ -83,5 +128,74 @@ source $ZSH/oh-my-zsh.sh
 # Example aliases
 # alias zshconfig="mate ~/.zshrc"
 # alias ohmyzsh="mate ~/.oh-my-zsh"
+#
+#
+# {{{ Autoload modules, when referenced
+zmodload -a zsh/zprof zprof
+zmodload -a zsh/stat stat
+zmodload -a zsh/zpty zpty
+zmodload -ap zsh/mapfile mapfile
+# }}}
 
-set -o vi
+#{{{ Custom Zsh options
+#
+# Autoload tmux, attach to TMUX or create one, when no tmux
+# plugin used, tmux
+ZSH_TMUX_AUTOSTART=true
+
+setopt AUTO_CD # implicit cd
+setopt RM_STAR_WAIT
+setopt ZLE
+setopt NOHUP
+setopt VI
+export EDITOR="vim"
+setopt NOBEEP
+#}}}
+
+#{{{ Golang
+export PATH=$PATH:/usr/local/go/bin
+export GOPATH=$HOME/go
+export PATH=$PATH:$HOME/go/bin
+#}}}
+
+#{{{ Custom, PATH settings
+export CPATH=$CPATH:~/git/confd/include
+export LIBRARY_PATH=$CPATH:~/git/confd/lib
+export LD_LIBRARY_PATH=$CPATH:~/git/confd/lib
+#}}}
+
+#{{{ Experimental options, On unexpected issues, investigate from here
+# saner terminal setting
+stty sane
+#}}}
+
+#{{{ Function, aliases
+# Lazy load
+# kubectl plugin is slow
+__lazy_zsh_kubectl() {
+if [ $commands[kubectl] ]; then
+	#Placeholder 'kubectl' shell function:
+	# Will only be executed on the first call to 'kubectl'
+	kubectl() {
+		# Remove this function, subsequent calls will execute 'kubectl' directly
+		unfunction "$0"
+		# Load auto-completion
+		source <(kubectl completion zsh)
+		# Execute 'kubectl' binary
+		$0 "$@"
+	}
+fi
+}
+[ -e $HOME/.aliases ] && source ${HOME}/.aliases
+[ -e $HOME/.bash_aliases ] && source ${HOME}/.bash_aliases
+[ -e $HOME/.zsh_aliases ] && source ${HOME}/.zsh.aliases
+#}}}
+
+#{{{ Profile, options - Keep at the end only
+if [[ "$ZSH_PROFILE_STARTUP" == true ]]; then
+	unsetopt xtrace
+	exec 2>&3 3>&-
+fi
+#}}}
+echo "zsh took $(($(date '+%s%3N') - startTime))ms to start"
+#}}}

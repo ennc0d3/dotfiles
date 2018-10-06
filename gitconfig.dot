@@ -1,5 +1,5 @@
 [user]
-	email = nagarajan.ganesan@ericsson.com
+	email = nagarajan.ganesan@xxxx.com
 	name = Nagarajan Ganesan
 
 [core]
@@ -26,6 +26,4 @@
 
 [rerere]
 	enabled = true
-	autoupdate = true
-
-
+    autoupdate = true

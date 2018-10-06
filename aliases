@@ -1,0 +1,11 @@
+# Filename: aliases
+# Purpose:  Aliases and functions definitions, shared between bash & zsh
+
+HISTSIZE=10000
+HISTFILESIZE=20000
+
+# CC options, disabled, interfers with cgo
+#export CC="ccache gcc"
+#export CXX="ccache g++"
+
+alias ssh='ssh -oStrictHostKeyChecking -oUserKnownHostsFile=/dev/null'
