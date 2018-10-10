@@ -43,7 +43,11 @@ set -g bell-action any
 set -g base-index 1
 
 # tell tmux to use 256 colour terminal
-set-option -g default-terminal screen-256color
+set-option -g default-terminal "screen-256color"
+
+#SLOW, Add to verify if it increase vim integration in tmux.
+set-option -s escape-time 10
+
 
 # xterm-style function key sequences
 setw -g xterm-keys on

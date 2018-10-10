@@ -4,6 +4,8 @@
 
 [core]
 	editor = vim
+	autocrlf = input
+	safecrlf = true
 
 [color]
     ui = true
@@ -27,3 +29,9 @@
 [rerere]
 	enabled = true
     autoupdate = true
+
+[alias]
+    st = status -uno
+    br = branch
+    wow = log --all --graph --decorate --oneline --simplify-by-decoration
+    fix = "!f() { ${EDITOR} `git diff --name-only`; }; f"

@@ -8,4 +8,34 @@ HISTFILESIZE=20000
 #export CC="ccache gcc"
 #export CXX="ccache g++"
 
-alias ssh='ssh -oStrictHostKeyChecking -oUserKnownHostsFile=/dev/null'
+_ssh() {
+	ssh -oStrictHostKeyChecking=no -oUserKnownHostsFile=/dev/null "$@"
+}
+
+add_sshid() {
+	ssh-copy-id "$@"
+}
+
+killit() {
+    # Kills any process that matches a regexp passed to it
+    ps aux | grep -v "grep" | grep "$@" | awk '{print $2}' | xargs kill
+}
+
+if [ -z "\${which tree}" ]; then
+  tree () {
+      find $@ -print | sed -e 's;[^/]*/;|____;g;s;____|; |;g'
+  }
+fi
+
+# make a dir and cd into it
+mcd () {
+    mkdir -p "$@" && cd "$@"
+}
+
+portslay () {
+    kill -9 `lsof -i tcp:$1 | tail -1 | awk '{ print $2;}'`
+}
+
+myshell () {
+  ps | grep `echo $$` | awk '{ print $4 }'
+}

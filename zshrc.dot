@@ -28,6 +28,11 @@ if [[ "$ZSH_PROFILE_STARTUP" == true ]]; then
 	setopt xtrace prompt_subst
 fi
 #}}}
+# Start a tmux session named 'TMUX' or attach if exists
+#if [[ -z "$TMUX" ]]
+#then
+#    tmux attach -t TMUX || tmux new -s TMUX
+#fi
 
 # If you come from bash you might have to change your $PATH.
 # export PATH=$HOME/bin:/usr/local/bin:$PATH
@@ -95,8 +100,14 @@ plugins=(
 	minikube
 	docker
 	kubectl
+	golang
+	zsh-complettions
+	zsh-autosuggestions
 	zsh-syntax-highlighting
+    prompt
 )
+# Reload autocomplete
+autoload -Uz compinit
 
 source $ZSH/oh-my-zsh.sh
 
@@ -144,12 +155,54 @@ zmodload -ap zsh/mapfile mapfile
 ZSH_TMUX_AUTOSTART=true
 
 setopt AUTO_CD # implicit cd
-setopt RM_STAR_WAIT
+#setopt RM_STAR_WAIT
 setopt ZLE
 setopt NOHUP
 setopt VI
-export EDITOR="vim"
 setopt NOBEEP
+
+# Use vi-mode, plugin
+
+export EDITOR="vim -u NONE"
+
+bindkey "jk" vi-cmd-mode
+
+# Better searching, when in command mode
+bindkey -M vicmd "?" history-incremental-search-backward
+bindkey -M vicmd "/" history-incremental-search-forward
+
+# http://stratus3d.com/blog/2017/10/26/better-vi-mode-in-zshell/
+# Beginning search with arrow keys
+bindkey "^[OA" up-line-or-beginning-search
+bindkey "^[OB" down-line-or-beginning-search
+bindkey -M vicmd "k" up-line-or-beginning-search
+bindkey -M vicmd "j" down-line-or-beginning-search
+
+# Make Vi mode transitions faster (KEYTIMEOUT is in hundredths of a second), 10ms
+#export KEYTIMEOUT=1
+
+# oh wow!  This is killer...  try it!
+bindkey -M vicmd "q" push-line
+
+# it's like, space AND completion.  Gnarlbot.
+bindkey -M viins ' ' magic-space
+
+
+# Updates editor information when the keymap changes.
+function zle-keymap-select() {
+  zle reset-prompt
+  zle -R
+}
+
+zle -N zle-keymap-select
+
+function vi_mode_prompt_info() {
+  echo "${${KEYMAP/vicmd/[% NORMAL]%}/(main|viins)/[% INSERT]%}"
+}
+
+# define right prompt, regardless of whether the theme defined it
+RPS1='$(vi_mode_prompt_info)'
+RPS2=$RPS1
 #}}}
 
 #{{{ Golang
@@ -172,7 +225,7 @@ stty sane
 #{{{ Function, aliases
 # Lazy load
 # kubectl plugin is slow
-__lazy_zsh_kubectl() {
+__if_kubectl_loading_slow_then_do_this(){
 if [ $commands[kubectl] ]; then
 	#Placeholder 'kubectl' shell function:
 	# Will only be executed on the first call to 'kubectl'
@@ -189,7 +242,11 @@ fi
 [ -e $HOME/.aliases ] && source ${HOME}/.aliases
 [ -e $HOME/.bash_aliases ] && source ${HOME}/.bash_aliases
 [ -e $HOME/.zsh_aliases ] && source ${HOME}/.zsh.aliases
+
+alias vimd='vim --startuptime /tmp/startup.log'
 #}}}
+
+
 
 #{{{ Profile, options - Keep at the end only
 if [[ "$ZSH_PROFILE_STARTUP" == true ]]; then

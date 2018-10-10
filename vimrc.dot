@@ -5,8 +5,11 @@ set rtp+=~/.vim/bundle/Vundle.vim
 call vundle#begin()
    Plugin 'VundleVim/Vundle.vim'
    Plugin 'tpope/vim-fugitive'
-   "Plugin 'scrooloose/nerdtree'
-   Plugin 'bronson/vim-trailing-whitespace'
+   Plugin 'tpope/vim-vinegar'
+   Plugin 'tpope/vim-unimpaired'
+   Plugin 'tpope/vim-repeat'
+   Plugin 'tpope/vim-abolish'
+   Plugin 'tpope/vim-surround'
    Plugin 'altercation/vim-colors-solarized'
    Plugin 'christoomey/vim-tmux-navigator'
    Plugin 'Yggdroot/indentLine'
@@ -23,28 +26,20 @@ call vundle#begin()
    Plugin 'honza/vim-snippets'
    Plugin 'ctrlpvim/ctrlp.vim'
    Plugin 'ekalinin/Dockerfile.vim'
-   Plugin 'vim-airline/vim-airline'
-   Plugin 'vim-airline/vim-airline-themes'
-   Plugin 'tpope/vim-unimpaired'
-   Plugin 'tpope/vim-repeat'
-   Plugin 'airblade/vim-gitgutter'
-   " Use cs"' ds"'
-   Plugin 'tpope/vim-surround'
+   Plugin 'itchyny/lightline.vim'
+   " Slow as hell
+   "Plugin 'airblade/vim-gitgutter'
    Plugin 'majutsushi/tagbar'
    Plugin 'w0rp/ale'
    " yaml
    Plugin 'mrk21/yaml-vim'
-   " Used for coerce, crs, crm, crc,cru ( coerce to snake, mixed, camel,
-   " upper,etc
-   Plugin 'tpope/vim-abolish'
    " Python
    Plugin 'python-mode/python-mode'
    Plugin 'vim-scripts/indentpython.vim'
-   "SLOWS
+   " trial plugins
    "Plugin 'tmhedberg/SimpylFold'
-
-   Plugin 'TaskList.vim' "TODO: Did i use this?
-   Plugin 'jceb/vim-orgmode' "TODO: Might use this, for the course
+   "Plugin 'TaskList.vim'
+   "Plugin 'jceb/vim-orgmode'
 call vundle#end()
 
 "{{{
@@ -93,8 +88,7 @@ set expandtab	  " always expand, noexpandtab is required only for makefile
 set autoindent    " always set autoindenting on
 set copyindent    " copy the previous indentation on autoindenting
 set number        " always show line numbers
-"SLOW?
-"set relativenumber " Show relative number
+set relativenumber " Show relative number
 set shiftround    " use multiple of shiftwidth when indenting with '<' and '>'
 set showmatch     " set show matching parenthesis
 set matchtime=0   " Avoid cursor to jump
@@ -147,12 +141,27 @@ nnoremap <leader>sv :source $MYVIMRC<cr>
 "
 "
 " UltiSnips not working with paste set
-" set paste
+"set paste
 "
-"NERDTree
-noremap <Leader>f :NERDTreeToggle<Enter>
-nnoremap <silent> <Leader>v :NERDTreeFind<cr>
-let NERDTreeIgnore=['\.pyc$', '\~$'] "ignore files in NERDTree
+"{{{ NERDTree ->  Vinegar(netrw)
+let g:netrw_banner=0
+let g:netrw_list_hide = '\(^\|\s\s\)\zs\.\S\+,\(^\|\s\s\)ntuser\.\S\+'
+
+" Close netrw
+autocmd FileType netrw setl bufhidden=wipe
+
+" width of netrw window
+let g:netrw_winsize= -28
+" tree view
+let g:netrw_liststyle=3
+
+" sort is affecting only: directories on the top, files below
+let g:netrw_sort_sequence = '[\/]$,*'
+
+" Use the previious window to open file
+let g:netrw_browse_split = 4
+autocmd FileType netrw set nolist
+"}}}
 
 "tagbar plugin
 noremap <Leader>T :TagbarToggle<Enter>
@@ -326,15 +335,11 @@ let g:molaki_original = 1
 colorscheme molokai
 
 
-" For vim-airline, install powerline font
-" git clone https://github.com/powerline/fonts; cd fonts/; ./install.sh
-" Set terminal profile to use a powerline font of your choice
-"SLOWS?
-"let g:airline#extensions#tabline#enabled = 1
-"let g:airline#extensions#syntastic#enabled = 1
-"let g:airline_theme='powerlineish'
-"let g:airline_powerline_fonts = 1
-"set laststatus=2
+" For lightline
+let g:lightline = {
+	\'colorscheme': 'solarized'
+	\}
+set laststatus=2
 
 " close help buffer using q
 autocmd FileType help noremap <buffer> q :q<cr>
@@ -348,11 +353,6 @@ au BufRead,BufNewFile *.py,*.pyw,*.c,*.h match BadWhitespace /\s\+$/
 
 "
 "
-" Open a terminal from vim
-noremap <C-r> :term<Enter>
-" Terminal window size of alteast 20 rows and columns to match the current
-" window
-set termwinsize = "20*0"
 " New split windows, at bottom
 set splitbelow
 set splitright
@@ -409,13 +409,6 @@ if 'VIRTUAL_ENV' in os.environ:
 	execfile(activate_this, dict(__file__=activate_this))
 EOF
 "}}}
-" Abbrevations
-iabbrev @@ ennc0d3@gmail.com
-
-" Custom mapping
-inoremap jk <esc>
-inoremap <esc> <nop>
-
 
 "
 "python formatter:
@@ -492,6 +485,18 @@ let g:pymode_rope_organize_imports_bind = '<C-c>ro'
 "* Maintain ~/.vimrc, remove unused plugin or bindings
 "* remap <ESC>
 "
+"{{{ Remap esc
+inoremap jk <esc>
+inoremap kj <esc>
+inoremap <esc> <nop>
+"}}}
+
+"{{{
+" Yggdroot/identLine
+" Dont conceal  uotes in json
+let g:vim_json_syntax_conceal = 0
+"}}}
+
 " TODO:
 " Use TaskList
 " Use CtrlP
@@ -500,41 +505,39 @@ let g:pymode_rope_organize_imports_bind = '<C-c>ro'
 " check if python-mode rope conflict with ycm
 "
 "
-"
 " wayneye.com/vimrc
 "***Language specified***
 " shell (tab width 2 chr)
-"autocmd FileType sh set sw=2
-"autocmd FileType sh set ts=2
-"autocmd FileType sh set sts=2
-"autocmd FileType sh set textwidth=0 expandtab
-"autocmd FileType sh map <buffer> <C-S-e> :w<CR>:!/bin/sh % <CR>
-" YAML (tab width 2 chr, no wrapping)
-"autocmd FileType yaml set sw=2
-"autocmd FileType yaml set ts=2
-"autocmd FileType yaml set sts=2
-"autocmd FileType yaml set textwidth=0 expandtab
-" Python (tab width 4 chr)
-"autocmd FileType python set sw=4
-"autocmd FileType python set ts=4
-"autocmd FileType python set sts=4
+autocmd FileType json setlocal ts=2 sts=2 sw=2 textwidth=0 expandtab
+autocmd FileType sh map <buffer> <C-S-e> :w<CR>:!/bin/sh % <CR>
 " Json (tab width 2 chr)
-"autocmd FileType json set sw=2
-"autocmd FileType json set ts=2
-"autocmd FileType json set sts=2
-"autocmd FileType json set textwidth=0 expandtab
+autocmd FileType json setlocal ts=2 sts=2 sw=2 textwidth=0 expandtab
 
 " Setup Omnicompletion
 " Messing with pymode?
-"autocmd FileType python set omnifunc=pythoncomplete#Complete
-"autocmd FileType html set omnifunc=htmlcomplete#CompleteTags
-"autocmd FileType xml set omnifunc=xmlcomplete#CompleteTags
-"autocmd FileType c set omnifunc=ccomplete#Complete
+autocmd FileType python set omnifunc=pythoncomplete#Complete
+autocmd FileType html set omnifunc=htmlcomplete#CompleteTags
+autocmd FileType xml set omnifunc=xmlcomplete#CompleteTags
+autocmd FileType c set omnifunc=ccomplete#Complete
 "improve autocomplete menu color
-"highlight Pmenu ctermbg=238 gui=bold
+highlight Pmenu ctermbg=238 gui=bold
 
 "
 "
+" Abbrevations
+iabbrev @@ ennc0d3@gmail.com
+"{{{ GitGutter, too slow
+" Try this valuesjk
+"let g:gitgutter_realtime = 0
+"let g:gitgutter_eager = 0
+" Profile it
+"profile start gitter.log
+"profile! file */vim-gitgutter/*
+"autocmd BufWritePost * GitGutter
+
+"}}}
+
+
 " NOTES:
 " q:  - Dynamic list of commands run in command mode aka history
 " :e <C-d> - List directories
