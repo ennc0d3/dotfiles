@@ -572,7 +572,7 @@ xmap ih <Plug>GitGutterTextObjectInnerVisual
 xmap ah <Plug>GitGutterTextObjectOuterVisual
 autocmd BufWritePost * GitGutter
 " Default is against staging
-let g:gitgutter_diff_base = 'origin/master'
+"let g:gitgutter_diff_base = 'origin/master'
 
 
 " Try this valuesjk

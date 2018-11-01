@@ -16,9 +16,10 @@ clone_or_pull() {
 	fi
 }
 
-get_terminal_setting() {
-    wget https://raw.githubusercontent.com/denysdovhan/gnome-terminal-one/master/one-dark.sh  -o /tmp/one-dark.sh
-    wget https://raw.githubusercontent.com/denysdovhan/gnome-terminal-one/master/one-light.sh  -o /tmp/one-light.sh
+install_terminal_settings(){
+    sudo apt-get install dconf-cli
+    wget -O xt  http://git.io/v3D4o && chmod +x xt && ./xt && rm xt 
+    wget -O gogh https://git.io/vQgMr && chmod +x gogh && ./gogh && rm gogh
 }
 
 # Install Parameters
