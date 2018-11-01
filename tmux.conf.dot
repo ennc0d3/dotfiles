@@ -265,12 +265,16 @@ set-option -g allow-rename off
 # WARN: Assuming you have zsh
 set-option -g default-shell /bin/zsh
 
+# WTF: Not used to it yet
+bind-key          j choose-window "join-pane -v -s "%%""
+bind-key          s choose-window "join-pane -h -s "%%""
+
 
 
 # -----------------------------------------------------------------------------
 # vim: fen fdl=0 fdm=marker
 
-# Synchronixe panes
+# Synchronize panes
 bind-key C-s setw synchronize-panes on
 bind-key C-t setw synchronize-panes off
 

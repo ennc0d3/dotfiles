@@ -39,3 +39,7 @@ portslay () {
 myshell () {
   ps | grep `echo $$` | awk '{ print $4 }'
 }
+
+lcd() {
+    cd $(ls -1t | head -1)
+}

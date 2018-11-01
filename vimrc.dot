@@ -10,6 +10,7 @@ call vundle#begin()
    Plugin 'tpope/vim-repeat'
    Plugin 'tpope/vim-abolish'
    Plugin 'tpope/vim-surround'
+   Plugin 'ntpeters/vim-better-whitespace'
    Plugin 'altercation/vim-colors-solarized'
    Plugin 'christoomey/vim-tmux-navigator'
    Plugin 'Yggdroot/indentLine'
@@ -28,11 +29,11 @@ call vundle#begin()
    Plugin 'ekalinin/Dockerfile.vim'
    Plugin 'itchyny/lightline.vim'
    " Slow as hell
-   "Plugin 'airblade/vim-gitgutter'
+   Plugin 'airblade/vim-gitgutter'
    Plugin 'majutsushi/tagbar'
    Plugin 'w0rp/ale'
    " yaml
-   Plugin 'mrk21/yaml-vim'
+   Plugin 'chase/vim-ansible-yaml'
    " Python
    Plugin 'python-mode/python-mode'
    Plugin 'vim-scripts/indentpython.vim'
@@ -40,6 +41,7 @@ call vundle#begin()
    "Plugin 'tmhedberg/SimpylFold'
    "Plugin 'TaskList.vim'
    "Plugin 'jceb/vim-orgmode'
+   Plugin 'sheerun/vim-polyglot'
 call vundle#end()
 
 "{{{
@@ -120,11 +122,6 @@ set list
 set listchars=tab:→\ ,trail:∙,nbsp:•,eol:¬
 autocmd filetype html,xml set listchars-=tab:>.
 
-" show invisible
-set list listchars=tab:▸\ ,trail:·,precedes:←,extends:→,eol:↲,nbsp:␣
-" hi NonText ctermfg=16 guifg=#4a4a59
-" hi SpecialKey ctermfg=16 guifg=#4a4a59
-" }}}
 "
 " Autocmd for aterating defaults {{{
 " }}}
@@ -199,8 +196,8 @@ au BufNewFile,BufRead,BufEnter *.cpp,*.hpp set omnifunc=omni#cpp#complete#Main
 " For IdentLine plugin
 " :IndentToggle
 set softtabstop=4 " makes the spaces feel like real tabs
-" let g:indentLine_color_term = 239
-" let g:indentLine_char = '|'
+let g:indentLine_color_term = 239
+let g:indentLine_char = '|'
 " }}}
 
 
@@ -244,9 +241,9 @@ autocmd FileType go nmap <leader>c <Plug>(go-coverage-toggle)
 autocmd FileType go nmap <leader>i <Plug>(go-info)
 autocmd FileType go nmap <C-]> :GoDef<cr>
 autocmd FileType go nmap <C-t> :GoDefPop<cr>
-autocmd FileType go nmap <C-T> :GoDefStack<cr>
+autocmd FileType go nmap <C-[> :GoDefStack<cr>
 autocmd FileType go nmap <C-c> :GoCallers<cr>
-autocmd FileType go nmap <C-C> :GoCallStack<cr>
+autocmd FileType go nmap <C-s> :GoCallStack<cr>
 
 
 
@@ -263,9 +260,11 @@ let g:go_addtags_transform = "camelcase"
 let g:go_highlight_types = 1
 let g:go_highlight_fields = 1
 let g:go_highlight_functions = 1
+let g:go_highlight_methods = 1
 let g:go_highlight_function_calls = 1
 let g:go_highlight_operators = 1
 let g:go_highlight_extra_types = 1
+let g:go_highlight_build_constraints = 1
 
 " default settings, add if more
 let g:go_metalinter_enabled = ['vet', 'golint', 'errcheck']
@@ -275,26 +274,12 @@ let g:go_metalinter_autosave_enabled = ['vet', 'golint']
 let g:go_metalinter_deadline = "5s"
 
 
-"""ENN try-mode
- let g:syntastic_go_checkers = ['golint', 'govet']
- let g:syntastic_mode_map = { 'mode': 'active', 'passive_filetypes': ['go'] }
-" If you want to add errcheck you can use gometalinter as a wrapper
- let g:syntastic_go_checkers = ['golint', 'govet', 'gometalinter']
- let g:syntastic_go_gometalinter_args = ['--disable-all', '--enable=errcheck']
- let g:syntastic_mode_map = { 'mode': 'active', 'passive_filetypes': ['go'] }
-"Another issue with `vim-go` and `syntastic` is that the location list window
-"that contains the output of commands such as `:GoBuild` and `:GoTest` might
-"not appear.  To resolve this:
- let g:go_list_type = "quickfix"
- """
-
 " use godef instead of guru, FIXME: Find which is better for you
-let g:go_def_mode = 'godef'
+let g:go_def_mode = 'guru'
 let g:go_auto_type_info = 1
 let g:go_auto_sameids = 1
 
 let g:go_guru_scope = [ "adp-gs-cm-nbi" ]
-set updatetime=100
 
 " For SirVer/ultisnips
 
@@ -331,14 +316,54 @@ let g:UltiSnipsEditSplit="vertical"
 
 " Trial, remove them after
 let g:rehash256 = 1
-let g:molaki_original = 1
-colorscheme molokai
+"let g:molaki_original = 1
+"colorscheme molokai
+colorscheme onedark
 
 
 " For lightline
 let g:lightline = {
-	\'colorscheme': 'solarized'
-	\}
+\ 'colorscheme': 'wombat',
+\ 'active': {
+\   'left': [['mode', 'paste'], ['filename', 'modified']],
+\   'right': [['lineinfo'], ['percent'], ['readonly', 'linter_warnings', 'linter_errors', 'linter_ok']]
+\ },
+\ 'component_expand': {
+\   'linter_warnings': 'LightlineLinterWarnings',
+\   'linter_errors': 'LightlineLinterErrors',
+\   'linter_ok': 'LightlineLinterOK'
+\ },
+\ 'component_type': {
+\   'readonly': 'error',
+\   'linter_warnings': 'warning',
+\   'linter_errors': 'error'
+\ },
+\ }
+
+function! LightlineLinterWarnings() abort
+  let l:counts = ale#statusline#Count(bufnr(''))
+  let l:all_errors = l:counts.error + l:counts.style_error
+  let l:all_non_errors = l:counts.total - l:all_errors
+  let g:ale_sign_warning = '
+  return l:counts.total == 0 ? '' : printf('%d ⚠', all_non_errors)
+endfunction
+
+function! LightlineLinterErrors() abort
+  let l:counts = ale#statusline#Count(bufnr(''))
+  let l:all_errors = l:counts.error + l:counts.style_error
+  let l:all_non_errors = l:counts.total - l:all_errors
+  return l:counts.total == 0 ? '' : printf('%d ✗', all_errors)
+endfunction
+
+function! LightlineLinterOK() abort
+  let l:counts = ale#statusline#Count(bufnr(''))
+  let l:all_errors = l:counts.error + l:counts.style_error
+  let l:all_non_errors = l:counts.total - l:all_errors
+  return l:counts.total == 0 ? '✓ ' : ''
+endfunction
+
+autocmd User ALELint call lightline#update()
+
 set laststatus=2
 
 " close help buffer using q
@@ -427,7 +452,10 @@ let g:ale_python_pylint_options = '--rcfile ~/git/dotfiles/pylintrc'
 
 
 " Ale settings
-" ale_sh: Fixer shfmt (go get -u github.com/mdvan/sh/cmd/shcmd)
+let g:ale_sign_error = '✘'
+let g:ale_sign_warning = '⚠'
+highlight ALEErrorSign ctermbg=NONE ctermfg=red
+highlight ALEWarningSign ctermbg=NONE ctermfg=yellow
 let g:ale_fix_on_save=1
 let g:ale_fixers = {
 	\ '*': ['remove_trailing_lines', 'trim_whitespace'],
@@ -436,9 +464,9 @@ let g:ale_fixers = {
   \ }
 let g:ale_sh_shell_default_shell='bash'
 let g:ale_fixers.python = ['yapf', 'autopep8', 'isort']
-nmap <silent> [s <Plug>(ale_previous_wrap)
-nmap <silent> ]s <Plug>(ale_next_wrap)
-nmap <leader>= <Plug>(ale_fix)
+nmap <silent> [w <Plug>(ale_previous_wrap)
+nmap <silent> ]w <Plug>(ale_next_wrap)
+    nmap <leader>f <Plug>(ale_fix)
 nmap <leader>+ :let b:ale_enabled=1<cr>
 
 "Disable Ale for the following file patterns
@@ -455,7 +483,7 @@ silent! helptags ALL
 
 "
 "
-let g:pymode=0
+let g:pymode=1
 let g:pymode_python='python'
 let g:pymode_syntax=1
 let g:pymode_syntax_all=1
@@ -468,8 +496,8 @@ let g:pymode_virtualenv = 1
 let g:pymode_lint = 0 "Disabled in favour of ALE
 let g:pymode_rope = 0
 let g:pymode_rope_lookup_project = 0
-let g:pymode_rope_completion = 1
-let g:pymode_rope_completion_on_dot = 1
+let g:pymode_rope_completion = 0
+let g:pymode_rope_completion_on_dot = 0
 let g:pymode_rope_completion_bind = '<C-space>'
 let g:pymode_rope_autoimport = 1
 let g:pymode_rope_goto_definition_bind = '<C-c>g'
@@ -493,10 +521,15 @@ inoremap <esc> <nop>
 
 "{{{
 " Yggdroot/identLine
-" Dont conceal  uotes in json
-let g:vim_json_syntax_conceal = 0
+" Dont conceal quotes in json
+let g:vim_json_syntax_conceal = 1
+let g:indentLine_concealcursor = 'inc'
+let g:indentLine_conceallevel = 2
 "}}}
 
+" show invisible
+set list listchars=tab:▸\ ,trail:·,precedes:←,extends:→,eol:↲,nbsp:␣
+" }}}
 " TODO:
 " Use TaskList
 " Use CtrlP
@@ -527,6 +560,21 @@ highlight Pmenu ctermbg=238 gui=bold
 " Abbrevations
 iabbrev @@ ennc0d3@gmail.com
 "{{{ GitGutter, too slow
+set updatetime=100
+nmap ]h <Plug>GitGutterNextHunk
+nmap [h <Plug>GitGutterPrevHunk
+nmap <Leader>ha <Plug>GitGutterStageHunk
+nmap <Leader>hu <Plug>GitGutterUndoHunk
+nmap <Leader>hv <Plug>GitGutterPreviewHunk
+omap ih <Plug>GitGutterTextObjectInnerPending
+omap ah <Plug>GitGutterTextObjectOuterPending
+xmap ih <Plug>GitGutterTextObjectInnerVisual
+xmap ah <Plug>GitGutterTextObjectOuterVisual
+autocmd BufWritePost * GitGutter
+" Default is against staging
+let g:gitgutter_diff_base = 'origin/master'
+
+
 " Try this valuesjk
 "let g:gitgutter_realtime = 0
 "let g:gitgutter_eager = 0

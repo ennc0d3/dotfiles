@@ -20,8 +20,8 @@ startTime=$(date "+%s%3N")
 export ZSH=$HOME/.oh-my-zsh
 
 #{{{ To profile startup, enable ZSH_PROFILE_STARTUP to true
-ZSH_PROFILE_STARTUP=false
 if [[ "$ZSH_PROFILE_STARTUP" == true ]]; then
+    echo "Profiling zsh startup, logs to /tmp/zsh-startlog.$$"
 	# http://zsh.sourceforge.net/Doc/Release/Prompt-Expansion.html
 	PS4=$'%D{%M%S%.} %N:%i> '
 	exec 3>&2 2>/tmp/zsh-startlog.$$
@@ -40,7 +40,11 @@ fi
 # Set name of the theme to load. Optionally, if you set this to "random"
 # it'll load a random theme each time that oh-my-zsh is loaded.
 # See https://github.com/robbyrussell/oh-my-zsh/wiki/Themes
-ZSH_THEME="bureau"
+#ZSH_THEME="bureau"
+ZSH_THEME="spaceship"
+SPACESHIP_VI_MODE_SHOW=false
+SPACESHIP_DIR_TRUNC_REPO=false
+
 
 # Set list of themes to load
 # Setting this variable when ZSH_THEME=random
@@ -97,7 +101,7 @@ plugins=(
 	vi-mode
 	colored-man-pages
 	tmux
-	minikube
+	#minikube
 	docker
 	kubectl
 	golang

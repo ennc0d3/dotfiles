@@ -16,6 +16,11 @@ clone_or_pull() {
 	fi
 }
 
+get_terminal_setting() {
+    wget https://raw.githubusercontent.com/denysdovhan/gnome-terminal-one/master/one-dark.sh  -o /tmp/one-dark.sh
+    wget https://raw.githubusercontent.com/denysdovhan/gnome-terminal-one/master/one-light.sh  -o /tmp/one-light.sh
+}
+
 # Install Parameters
 github_vundle_loc=https://github.com/VundleVim/Vundle.vim.git
 vim_bundle_root=~/.vim/bundle
