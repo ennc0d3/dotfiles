@@ -9,37 +9,41 @@ HISTFILESIZE=20000
 #export CXX="ccache g++"
 
 _ssh() {
-	ssh -oStrictHostKeyChecking=no -oUserKnownHostsFile=/dev/null "$@"
+    ssh -oStrictHostKeyChecking=no -oUserKnownHostsFile=/dev/null "$@"
 }
 
 add_sshid() {
-	ssh-copy-id "$@"
+    ssh-copy-id "$@"
 }
 
-killit() {
+_killit() {
     # Kills any process that matches a regexp passed to it
     ps aux | grep -v "grep" | grep "$@" | awk '{print $2}' | xargs kill
 }
 
 if [ -z "\${which tree}" ]; then
-  tree () {
-      find $@ -print | sed -e 's;[^/]*/;|____;g;s;____|; |;g'
-  }
+    tree() {
+        find $@ -print | sed -e 's;[^/]*/;|____;g;s;____|; |;g'
+    }
 fi
 
 # make a dir and cd into it
-mcd () {
+_mcd() {
     mkdir -p "$@" && cd "$@"
 }
 
-portslay () {
-    kill -9 `lsof -i tcp:$1 | tail -1 | awk '{ print $2;}'`
+_portslay() {
+    kill -9 $(lsof -i tcp:$1 | tail -1 | awk '{ print $2;}')
 }
 
-myshell () {
-  ps | grep `echo $$` | awk '{ print $4 }'
+_myshell() {
+    ps | grep $(echo $$) | awk '{ print $4 }'
 }
 
-lcd() {
+_lcd() {
     cd $(ls -1t | head -1)
+}
+
+_pyclean() {
+    find ${1:-.} \( -name '*.py[co]' -o -name '__pycache__' -o -name '.pytest_cache' \) -exec rm -rf {} \; 2>/dev/null
 }

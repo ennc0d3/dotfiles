@@ -15,6 +15,7 @@ call vundle#begin()
    Plugin 'christoomey/vim-tmux-navigator'
    Plugin 'Yggdroot/indentLine'
    Plugin 'flazz/vim-colorschemes'
+   Plugin 'joshdick/onedark.vim'
    Plugin 'fatih/molokai'
    " ~/.vim/vundle/YouCompleteMe/install.py --clang-completer --go-completer
    Plugin 'Valloric/YouCompleteMe'
@@ -212,6 +213,7 @@ let g:go_autodetect_gopath = 1
 
 "
 autocmd BufNewFile,BufRead *.go setlocal expandtab tabstop=4 softtabstop=4 shiftwidth=4
+autocmd filetype go, set listchars-=tab:
 " }}}
 
 " {{{ Added 01/sep/1028
@@ -279,7 +281,41 @@ let g:go_def_mode = 'guru'
 let g:go_auto_type_info = 1
 let g:go_auto_sameids = 1
 
-let g:go_guru_scope = [ "adp-gs-cm-nbi" ]
+" from https://gist.github.com/tyru/984296
+" Substitute a:from => a:to by string.
+" To substitute by pattern, use substitute() instead.
+function! s:substring(str, from, to)
+  if a:str ==# '' || a:from ==# ''
+      return a:str
+  endif
+  let str = a:str
+  let idx = stridx(str, a:from)
+  while idx !=# -1
+      let left  = idx ==# 0 ? '' : str[: idx - 1]
+      let right = str[idx + strlen(a:from) :]
+      let str = left . a:to . right
+      let idx = stridx(str, a:from)
+  endwhile
+  return str
+endfunction
+
+function! s:chomp(string)
+  return substitute(a:string, '\n\+$', '', '')
+endfunction
+
+function! s:go_guru_scope_from_git_root()
+" chomp because get rev-parse returns line with newline at the end
+  return s:chomp(s:substring(system("git rev-parse --show-toplevel"),$GOPATH . "/src/","")) . "/..."
+endfunction
+
+
+function! s:go_guru_scope_from_git_root_()
+  let gitroot = system("git rev-parse --show-toplevel | tr -d '\n'")
+  let pattern = escape(go#util#gopath() . "/src/", '\ /')
+  return substitute(gitroot, pattern, "", "") . "/... vendor/"
+endfunction
+
+au FileType go silent exe "GoGuruScope " . s:go_guru_scope_from_git_root()
 
 " For SirVer/ultisnips
 
@@ -316,7 +352,7 @@ let g:UltiSnipsEditSplit="vertical"
 
 " Trial, remove them after
 let g:rehash256 = 1
-"let g:molaki_original = 1
+let g:molaki_original = 1
 "colorscheme molokai
 colorscheme onedark
 
