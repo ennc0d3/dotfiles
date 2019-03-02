@@ -215,14 +215,12 @@ RPS2=$RPS1
 
 #{{{ Golang
 export PATH=$PATH:/usr/local/go/bin
+# go11.5 not require 20/2/19
 export GOPATH=$HOME/go
 export PATH=$PATH:$HOME/go/bin
 #}}}
 
 #{{{ Custom, PATH settings
-export CPATH=$CPATH:~/git/confd/include
-export LIBRARY_PATH=$CPATH:~/git/confd/lib
-export LD_LIBRARY_PATH=$CPATH:~/git/confd/lib
 #}}}
 
 #{{{ Experimental options, On unexpected issues, investigate from here
