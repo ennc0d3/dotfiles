@@ -30,8 +30,12 @@
 	enabled = true
     autoupdate = true
 
+
 [alias]
     st = status -uno
+    status = status -uno
     br = branch
     wow = log --all --graph --decorate --oneline --simplify-by-decoration
     fix = "!f() { ${EDITOR} `git diff --name-only`; }; f"
+    edit-unmerged = "!$EDITOR `git diff --name-only --diff-filter=U`"
+    add-unmerged = "!git add `git diff --name-only --diff-filter=U`"
