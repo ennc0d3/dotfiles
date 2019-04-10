@@ -41,9 +41,29 @@ fi
 # it'll load a random theme each time that oh-my-zsh is loaded.
 # See https://github.com/robbyrussell/oh-my-zsh/wiki/Themes
 #ZSH_THEME="bureau"
-ZSH_THEME="spaceship"
-SPACESHIP_VI_MODE_SHOW=false
-SPACESHIP_DIR_TRUNC_REPO=false
+function use_spaceship_theme() {
+    ZSH_THEME="spaceship"
+    SPACESHIP_VI_MODE_SHOW=false
+    SPACESHIP_DIR_TRUNC_REPO=false
+}
+# NOTE: mån  8 apr 2019 07:46:53 CEST Change to try powelinefont
+function use_powerlevel9k_theme() {
+    # git clone https://github.com/bhilburn/powerlevel9k.git ~/.oh-my-zsh/custom/themes/powerlevel9k
+    # Install nerd-fonts
+    # https://github.com/ryanoasis/nerd-fonts
+    # mkdir -p ~/.local/share/fonts
+    # cd ~/.local/share/fonts && curl -fLo "Droid Sans Mono for Powerline Nerd Font Complete.otf" https://github.com/ryanoasis/nerd-fonts/raw/master/patched-fonts/DroidSansMono/complete/Droid%20Sans%20Mono%20Nerd%20Font%20Complete.otf
+    # Prompt customization https://github.com/bhilburn/powerlevel9k#prompt-customization
+    POWERLEVEL9K_MODE='nerdfont-complete'
+    #POWERLEVEL9K_PROMPT_ADD_NEWLINE=true
+    POWERLEVEL9K_LEFT_PROMPT_ELEMENTS=(dir vcs newline status)
+    POWERLEVEL9K_RIGHT_PROMPT_ELEMENTS=(background_jobs command_execution_time time todo )
+    ZSH_THEME="powerlevel9k/powerlevel9k"
+}
+
+use_spaceship_theme
+
+
 
 
 # Set list of themes to load
