@@ -47,3 +47,7 @@ _lcd() {
 _pyclean() {
     find ${1:-.} \( -name '*.py[co]' -o -name '__pycache__' -o -name '.pytest_cache' \) -exec rm -rf {} \; 2>/dev/null
 }
+
+_helm_rm_all(){
+    helm ls --namespace ${1:-"enaggan"} | cut -f1  | grep -v NAME | xargs helm del --purge   
+}

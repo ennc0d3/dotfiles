@@ -51,6 +51,9 @@ vim +PluginInstall +qall
 
 info "Install oh-my-zsh"
 sh -c "$(curl -fsSL $oh_my_zsh_installer)"
+info "Install the zsh plugins"
+git clone https://github.com/zsh-users/zsh-syntax-highlighting.git ${ZSH_CUSTOM:-~/.oh-my-zsh/custom}/plugins/zsh-syntax-highlighting
+git clone https://github.com/zsh-users/zsh-completions ${ZSH_CUSTOM:=~/.oh-my-zsh/custom}/plugins/zsh-completions
 
 
 info "Install tmux plugin manager(TPM)"

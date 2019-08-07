@@ -1,0 +1,5 @@
+vim -u NONE
+vim --startuptime /tmp/startup.log <file>
+Check the most consuming part, then run,
+:verbose autocmd VimEnter
+This will show list of plugins, consuming it. Try disabling and see
