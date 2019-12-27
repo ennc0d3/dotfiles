@@ -53,3 +53,5 @@ _pyclean() {
 _helm_rm_all(){
     helm ls --namespace ${1:-"enaggan"} | cut -f1  | grep -v NAME | xargs helm del --purge   
 }
+
+alias kc='kubectl'

@@ -132,6 +132,7 @@ plugins=(
 	zsh-completions
 	zsh-autosuggestions
 	zsh-syntax-highlighting
+	zsh-history-substring-search
 )
 # Reload autocomplete
 autoload -Uz compinit
@@ -228,14 +229,16 @@ function vi_mode_prompt_info() {
 }
 
 # define right prompt, regardless of whether the theme defined it
-RPS1='$(vi_mode_prompt_info)'
-RPS2=$RPS1
+# Vim prompt slow?
+#RPS1='$(vi_mode_prompt_info)'
+#RPS2=$RPS1
 #}}}
 
 #{{{ Golang
 export PATH=$PATH:/usr/local/go/bin
 # go11.5 not require 20/2/19
 export GOPATH=$HOME/go
+export GOBIN=$GOPATH/bin
 export PATH=$PATH:$HOME/go/bin
 #}}}
 
@@ -293,3 +296,11 @@ setopt hist_verify            # show command with history expansion to user befo
 setopt inc_append_history     # add commands to HISTFILE in order of execution
 setopt share_history          # share command history data
 #}}}
+#
+# {{{ CTRL-<space>
+bindkey '^ ' autosuggest-accept
+# }}}
+#
+# {{{ Change autosuggesion hight color in solarized dark
+ZSH_AUTOSUGGEST_HIGHLIGHT_STYLE='fg=60'
+# }}}

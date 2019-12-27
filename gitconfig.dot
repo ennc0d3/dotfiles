@@ -1,6 +1,9 @@
 [user]
-	email = nagarajan.ganesan@fixme.com
+	email = ennc0d3@gmail.com
 	name = Nagarajan Ganesan
+
+[credential]
+	helper = store
 
 [core]
 	editor = vim
@@ -29,7 +32,6 @@
 [rerere]
 	enabled = true
     autoupdate = true
-
 
 [alias]
     st = status -uno
