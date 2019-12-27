@@ -4,6 +4,8 @@
 HISTSIZE=10000
 HISTFILESIZE=20000
 
+alias vim='nvim'
+
 # CC options, disabled, interfers with cgo
 #export CC="ccache gcc"
 #export CXX="ccache g++"

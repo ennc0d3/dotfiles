@@ -76,9 +76,11 @@ scriptencoding utf-8
 filetype on
 filetype plugin indent on    " required
 syntax on
-set ttyfast     "Indicate fast termina; conn for faster redraw
-set ttymouse=xterm  "Indicate terminal type for mouse codes
-set ttyscroll=3  "Speedup scrolling
+if !has('nvim')
+    set ttyfast         " Indicate fast termina; conn for faster redraw
+    set ttymouse=xterm  " Indicate terminal type for mouse codes
+    set ttyscroll=3     " Speedup scrolling
+endif
 
 " Solarized Plugin{{{
    set background=dark
