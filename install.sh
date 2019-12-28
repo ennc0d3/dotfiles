@@ -23,8 +23,6 @@ install_terminal_settings(){
 }
 
 # Install Parameters
-github_vundle_loc=https://github.com/VundleVim/Vundle.vim.git
-vim_bundle_root=~/.vim/bundle
 
 github_tmux_plugin_loc=https://github.com/tmux-plugins/tpm
 tmux_plugin_root=~/.tmux/plugins
@@ -41,8 +39,9 @@ for f in $(ls -1 $package_root/*.dot); do
 done
 
 
-info "Install vundle"
-clone_or_pull $github_vundle_loc $vim_bundle_root/Vundle.vim
+info "Install plug"
+curl -fLo ~/.vim/autoload/plug.vim --create-dirs \
+    https://raw.githubusercontent.com/junegunn/vim-plug/master/plug.vim
 
 
 info "Install the vim plugins"
