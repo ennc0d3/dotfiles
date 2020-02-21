@@ -82,10 +82,9 @@ if !has('nvim')
 endif
 
 " Solarized Plugin{{{
-   set background=dark
-   if &t_Co >=256 || has("gui_running")
-      colorscheme solarized
-   endif
+"   set background=dark
+"   if &t_Co >=256 || has("gui_running")
+"   endif
 " }}}
 "
 " Common setings{{{
@@ -413,6 +412,15 @@ nnoremap <cr> <C-w><C-w>
 " Python IDE
 "
 "
+"python with virtualenv support
+py3 << EOF
+import os
+import sys
+if 'VIRTUAL_ENV' in os.environ:
+   project_base_dir = os.environ['VIRTUAL_ENV']
+   activate_this = os.path.join(project_base_dir, 'bin/activate_this.py')
+   execfile(activate_this, dict(__file__=activate_this))
+EOF
 set nofoldenable
 "set foldmethod=indent
 "set foldlevel=99
@@ -428,17 +436,6 @@ au BufNewFile, BufRead *.py
     \ set fileformat=unix
     \ set smartindent
 let python_highlight_all=1
-
-" python with virtualenv support
-py << EOF
-import os
-import sys
-if 'VIRTUAL_ENV' in os.environ:
-    project_base_dir = os.environ['VIRTUAL_ENV']
-    activate_this = os.path.join(project_base_dir, 'bin/activate_this.py')
-    execfile(activate_this, dict(__file__=activate_this))
-EOF
-"}}}
 
 "
 "python formatter:
@@ -638,7 +635,7 @@ call matchadd('ColorColumn', '\%81v', 120)
 " shift-K in vim-go enters to mode which writes  jkjk
 "
 if !has('nvim')
-    let g:python3_host_prog="/usr/bin/python3"
+    "let g:python3_host_prog="/usr/bin/python3"
     " Enable deoplete on startup
     let g:deoplete#enable_at_startup = 1
 endif

@@ -257,9 +257,7 @@ set -g visual-activity on
 set-option -g repeat-time 0
 
 #
-set-window-option -g utf8 on
 set -g status on
-set -g status-utf8 on
 set-option -g allow-rename off
 
 # WARN: Assuming you have zsh
