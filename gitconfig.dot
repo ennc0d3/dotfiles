@@ -1,12 +1,12 @@
 [user]
-	email = ennc0d3@gmail.com
+	email = nagarajan.ganesan@ericsson.com
 	name = Nagarajan Ganesan
 
 [credential]
 	helper = store
 
 [core]
-	editor = vim
+	editor = nvim
 	autocrlf = false
 	safecrlf = true
 

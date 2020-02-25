@@ -304,3 +304,16 @@ bindkey '^ ' autosuggest-accept
 # {{{ Change autosuggesion hight color in solarized dark
 ZSH_AUTOSUGGEST_HIGHLIGHT_STYLE='fg=60'
 # }}}
+
+# Add RVM to PATH for scripting. Make sure this is the last PATH variable change.
+export PATH="$PATH:$HOME/.rvm/bin"
+
+gotest() {
+  go test $* | sed ''/PASS/s//$(printf "\033[32mPASS\033[0m")/'' | sed ''/FAIL/s//$(printf "\033[31mFAIL\033[0m")/'' | sed ''/FAIL/s//$(printf "\033[31mFAIL\033[0m")/'' | GREP_COLOR="01;33" egrep --color=always '\s*[a-zA-Z0-9\-_.]+[:][0-9]+[:]|^'
+}
+
+# krew path
+export PATH="${KREW_ROOT:-$HOME/.krew}/bin:$PATH"
+
+# Add bob to path
+export PATH=${HOME}/git/bob:$PATH

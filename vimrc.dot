@@ -8,25 +8,22 @@ call plug#begin('~/.vim/plugged')
    Plug 'tpope/vim-repeat'
    Plug 'tpope/vim-abolish'
    Plug 'tpope/vim-surround'
+   Plug 'fatih/vim-go'
+   Plug 'neoclide/coc.nvim', {'branch': 'release'}
+   Plug 'junegunn/fzf'
    Plug 'ntpeters/vim-better-whitespace'
-   Plug 'altercation/vim-colors-solarized'
    Plug 'christoomey/vim-tmux-navigator'
    Plug 'Yggdroot/indentLine'
    Plug 'flazz/vim-colorschemes'
    Plug 'joshdick/onedark.vim'
-   Plug 'fatih/molokai'
    Plug 'scrooloose/nerdtree'
    "NOTE TRY ME and compare again YouCompleteMe for py complet
    Plug 'davidhalter/jedi-vim'
-   "{{{ golang
-   Plug 'fatih/vim-go', { 'do': ':GoInstallBinaries' }
-   ""FIXME:  20/2/2018 - Experiment with autocomplete, does it improve
-   "Plug 'mdempsky/gocode', {'rtp': 'vim/'}
-   "}}}
    " Use gS, gJ
    Plug 'AndrewRadev/splitjoin.vim' "
    Plug 'SirVer/ultisnips'
    Plug 'honza/vim-snippets'
+
    " Need by vim-go for :GoDecls, :GoDeclsDir
    Plug 'ctrlpvim/ctrlp.vim'
    Plug 'ekalinin/Dockerfile.vim'
@@ -45,17 +42,28 @@ call plug#begin('~/.vim/plugged')
    "Plug 'TaskList.vim'
    "Plug 'jceb/vim-orgmode'
    Plug 'sheerun/vim-polyglot'
-   Plug 'ervandew/supertab'
-   Plug 'Shougo/deoplete.nvim'
+   Plug 'ervandew/supertab', {'on':[]}
+   if has ('nvim')
+       Plug 'Shougo/deoplete.nvim', { 'on':[], 'do': ':UpdateRemotePlugins' }
+   else
+       Plug 'Shougo/deoplete.nvim'
+       Plug 'roxma/nvim-yarp'
+       Plug 'roxma/vim-hug-neovim-rpc'
+   endif
+   Plug 'deoplete-plugins/deoplete-jedi'
    Plug 'deoplete-plugins/deoplete-go', { 'do': 'make'}
+   Plug 'junegunn/vader.vim' "Added for vimscript testing
+   Plug 'sebdah/vim-delve'
 call plug#end()
 
 "{{{
 set exrc
 set secure
 set showcmd "show last command enter of bottom right
+set cmdheight=2 "Give more space for displaying messages
 "SLOW
-set cursorline "highlight current line
+" Show a line under the cursor, but its annoying
+"set cursorline "highlight current line
 set wildmenu "visual auto complete for command menu
 set lazyredraw "redraw only when we need to
 "}}}
@@ -81,13 +89,7 @@ if !has('nvim')
     set ttyscroll=3     " Speedup scrolling
 endif
 
-" Solarized Plugin{{{
-"   set background=dark
-"   if &t_Co >=256 || has("gui_running")
-"   endif
-" }}}
-"
-" Common setings{{{
+"{{{ Common setings
 let mapleader=","
 "set clipboard=unamed "CHECKME: Is copying working
 set nowrap        " don't wrap lines
@@ -128,6 +130,8 @@ set noswapfile
 set ruler             "Show cursor's current col and line number
 set autoread          "Reload buffer if file was modified in another buffer
 set shortmess+=I      "Suppress startup message on vim
+set shortmess+=c      "Dont passs message to |ins-completion-menu|
+set signcolumn=yes
 set list
 set hidden            "Buffer should still exists if window is closed
 set listchars=tab:→\ ,trail:∙,nbsp:•,eol:¬
@@ -197,12 +201,12 @@ let g:indentLine_char = '|'
 
 
 
-" {{{ vim-go customization
+" {vim-go customization
 " https://github.com/fatih/vim-go-tutorial#quick-setup
 " gofmt and rewrite the import declarations
 " vendor packages not working, trying with -srcdir .
 let g:go_fmt_command = "goimports"
-let g:go_autodetect_gopath = 1
+"let g:go_autodetect_gopath = 1
 " Use only quickfix list not location list
 let g:go_list_type = "quickfix"
 
@@ -265,7 +269,7 @@ autocmd Filetype go command! -bang AV call go#alternate#Switch(<bang>0, 'vsplit'
 autocmd Filetype go command! -bang AS call go#alternate#Switch(<bang>0, 'split')
 autocmd Filetype go command! -bang AT call go#alternate#Switch(<bang>0, 'tabe')
 
-" vim-go default  is snake_case
+" vim-go default is snake_case
 let g:go_addtags_transform = "camelcase"
 " highligt types, fields
 let g:go_highlight_types = 1
@@ -326,13 +330,10 @@ let g:UltiSnipsEditSplit="vertical"
 
 " Check :help go-settings
 
-" Trial, remove them after
-let g:rehash256 = 1
-let g:molaki_original = 1
+"colorscheme gruvbox
+"colorscheme zenburn
 "colorscheme molokai
-colorscheme onedark
-" NOTE: 13-03-2019, For toggling schema
-call togglebg#map("<F5>")
+"colorscheme onedark
 
 
 " For lightline
@@ -413,14 +414,14 @@ nnoremap <cr> <C-w><C-w>
 "
 "
 "python with virtualenv support
-py3 << EOF
-import os
-import sys
-if 'VIRTUAL_ENV' in os.environ:
-   project_base_dir = os.environ['VIRTUAL_ENV']
-   activate_this = os.path.join(project_base_dir, 'bin/activate_this.py')
-   execfile(activate_this, dict(__file__=activate_this))
-EOF
+"py3 << EOF
+"import os
+"import sys
+"if 'VIRTUAL_ENV' in os.environ:
+"   project_base_dir = os.environ['VIRTUAL_ENV']
+"   activate_this = os.path.join(project_base_dir, 'bin/activate_this.py')
+"   execfile(activate_this, dict(__file__=activate_this))
+"EOF
 set nofoldenable
 "set foldmethod=indent
 "set foldlevel=99
@@ -461,11 +462,11 @@ highlight ALEWarningSign ctermbg=NONE ctermfg=yellow
 let g:ale_fix_on_save=1
 let g:ale_fixers = {
     \ '*': ['remove_trailing_lines', 'trim_whitespace'],
-    \ 'python': ['yapf', 'isort', 'black', 'autopep8'],
+    \ 'python': ['isort', 'black', 'autopep8'],
     \ 'sh': ['shfmt'],
   \ }
 let g:ale_sh_shell_default_shell='bash'
-let g:ale_fixers.python = ['yapf', 'autopep8', 'isort' ]
+let g:ale_fixers.python = ['black', 'autopep8', 'isort' ]
 nmap <silent> [w <Plug>(ale_previous_wrap)
 nmap <silent> ]w <Plug>(ale_next_wrap)
 nmap <leader>f <Plug>(ale_fix)
@@ -619,7 +620,10 @@ nmap <silent> [G :tabrewind<CR>
 nmap <silent> ]G :tablast<CR>
 ""}}}
 """JEDI
+let g:jedi#completions_enabled = 0 "Not using jedi auto-completions
 let g:jedi#show_call_signatures = "1"
+let g:jedi#use_splits_not_buffers = "right"
+
 
 "" Highlight long lines > 120
 highlight ColorColumn ctermbg=magenta
@@ -634,8 +638,139 @@ call matchadd('ColorColumn', '\%81v', 120)
 " ISSUES
 " shift-K in vim-go enters to mode which writes  jkjk
 "
-if !has('nvim')
-    "let g:python3_host_prog="/usr/bin/python3"
+" Install pynvim in virtualenv .neovim
+" Enable python 3 interface: pip3 install --user pynvim
+let g:python3_host_prog="~/.neovim3/bin/python3.8.1"
+if has('nvim')
     " Enable deoplete on startup
     let g:deoplete#enable_at_startup = 1
 endif
+
+
+" Use tab for trigger completion with characters ahead and navigate.
+" NOTE: Use command ':verbose imap <tab>' to make sure tab is not mapped by
+" other plugin before putting this into your config.
+inoremap <silent><expr> <TAB>
+      \ pumvisible() ? "\<C-n>" :
+      \ <SID>check_back_space() ? "\<TAB>" :
+      \ coc#refresh()
+inoremap <expr><S-TAB> pumvisible() ? "\<C-p>" : "\<C-h>"
+
+function! s:check_back_space() abort
+  let col = col('.') - 1
+  return !col || getline('.')[col - 1]  =~# '\s'
+endfunction
+
+" Use <c-space> to trigger completion.
+inoremap <silent><expr> <c-space> coc#refresh()
+
+" Use <cr> to confirm completion, `<C-g>u` means break undo chain at current
+" position. Coc only does snippet and additional edit on confirm.
+if has('patch8.1.1068')
+  " Use `complete_info` if your (Neo)Vim version supports it.
+  inoremap <expr> <cr> complete_info()["selected"] != "-1" ? "\<C-y>" : "\<C-g>u\<CR>"
+else
+  imap <expr> <cr> pumvisible() ? "\<C-y>" : "\<C-g>u\<CR>"
+endif
+
+" Use `[g` and `]g` to navigate diagnostics
+nmap <silent> [g <Plug>(coc-diagnostic-prev)
+nmap <silent> ]g <Plug>(coc-diagnostic-next)
+
+" GoTo code navigation.
+nmap <silent> gd <Plug>(coc-definition)
+nmap <silent> gy <Plug>(coc-type-definition)
+nmap <silent> gi <Plug>(coc-implementation)
+nmap <silent> gr <Plug>(coc-references)
+
+" Use K to show documentation in preview window.
+nnoremap <silent> K :call <SID>show_documentation()<CR>
+
+function! s:show_documentation()
+  if (index(['vim','help'], &filetype) >= 0)
+    execute 'h '.expand('<cword>')
+  else
+    call CocAction('doHover')
+  endif
+endfunction
+
+" Highlight the symbol and its references when holding the cursor.
+autocmd CursorHold * silent call CocActionAsync('highlight')
+
+" Symbol renaming.
+nmap <leader>rn <Plug>(coc-rename)
+
+" Formatting selected code.
+xmap <leader>f  <Plug>(coc-format-selected)
+nmap <leader>f  <Plug>(coc-format-selected)
+
+augroup mygroup
+  autocmd!
+  " Setup formatexpr specified filetype(s).
+  autocmd FileType typescript,json setl formatexpr=CocAction('formatSelected')
+  " Update signature help on jump placeholder.
+  autocmd User CocJumpPlaceholder call CocActionAsync('showSignatureHelp')
+augroup end
+
+" Applying codeAction to the selected region.
+" Example: `<leader>aap` for current paragraph
+xmap <leader>a  <Plug>(coc-codeaction-selected)
+nmap <leader>a  <Plug>(coc-codeaction-selected)
+
+" Remap keys for applying codeAction to the current line.
+nmap <leader>ac  <Plug>(coc-codeaction)
+" Apply AutoFix to problem on the current line.
+nmap <leader>qf  <Plug>(coc-fix-current)
+
+" Introduce function text object
+" NOTE: Requires 'textDocument.documentSymbol' support from the language server.
+xmap if <Plug>(coc-funcobj-i)
+xmap af <Plug>(coc-funcobj-a)
+omap if <Plug>(coc-funcobj-i)
+omap af <Plug>(coc-funcobj-a)
+
+" Use <TAB> for selections ranges.
+" NOTE: Requires 'textDocument/selectionRange' support from the language server.
+" coc-tsserver, coc-python are the examples of servers that support it.
+nmap <silent> <TAB> <Plug>(coc-range-select)
+xmap <silent> <TAB> <Plug>(coc-range-select)
+
+" Add `:Format` command to format current buffer.
+command! -nargs=0 Format :call CocAction('format')
+
+" Add `:Fold` command to fold current buffer.
+command! -nargs=? Fold :call     CocAction('fold', <f-args>)
+
+" Add `:OR` command for organize imports of the current buffer.
+command! -nargs=0 OR   :call     CocAction('runCommand', 'editor.action.organizeImport')
+
+" Add (Neo)Vim's native statusline support.
+" NOTE: Please see `:h coc-status` for integrations with external plugins that
+" provide custom statusline: lightline.vim, vim-airline.
+set statusline^=%{coc#status()}%{get(b:,'coc_current_function','')}
+
+" Mappings using CoCList:
+" Show all diagnostics.
+nnoremap <silent> <space>a  :<C-u>CocList diagnostics<cr>
+" Manage extensions.
+nnoremap <silent> <space>e  :<C-u>CocList extensions<cr>
+" Show commands.
+nnoremap <silent> <space>c  :<C-u>CocList commands<cr>
+" Find symbol of current document.
+nnoremap <silent> <space>o  :<C-u>CocList outline<cr>
+" Search workspace symbols.
+nnoremap <silent> <space>s  :<C-u>CocList -I symbols<cr>
+" Do default action for next item.
+nnoremap <silent> <space>j  :<C-u>CocNext<CR>
+" Do default action for previous item.
+nnoremap <silent> <space>k  :<C-u>CocPrev<CR>
+" Resume latest coc list.
+nnoremap <silent> <space>p  :<C-u>CocListResume<CR>
+" Use U to show documentation in preview window
+nnoremap <silent> U :call <SID>show_documentation()<CR>
+" Added July 2020
+au FileType go nmap <F10> :GoTest -short<cr>
+au FileType go nmap <F9> :GoCoverageToggle -short<cr>
+au FileType go nmap <F12> <Plug>(go-def)
+
+colorscheme zenburn
