@@ -1,0 +1,37 @@
+#!/bin/sh
+
+info() {
+	echo "INFO: $@"
+}
+
+
+clone_or_pull() {
+	remote_repo=$1
+	local_repo=$2
+	if [ ! -d $local_repo/.git ]; then
+		git clone ${remote_repo} ${local_repo}
+	else
+		cd $local_repo
+		git pull $remote_repo
+	fi
+}
+
+# Install Parameters
+github_vundle_loc=https://github.com/VundleVim/Vundle.vim.git
+vim_bundle_root=~/.vim/bundle
+
+info "Symlink dotfiles"
+package_root=$(readlink ${0%/*})
+for f in $(ls -1 $package_root/*.dot); do
+	target_f=$(basename $f)
+	target_f=${target_f%%.dot}
+	ln -s $f ~/.${target_f} > /dev/null 2>&1
+done
+
+
+info "Install vundle"
+clone_or_pull $github_vundle_loc $vim_bundle_root/Vundle.vim
+
+
+info "Install the vim plugins"
+vim +PluginInstall +qall
