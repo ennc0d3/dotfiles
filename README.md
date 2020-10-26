@@ -1,7 +1,7 @@
 ## dotfiles
->Repository for storing dotfiles with an installation script.A
+>Repository for storing dotfiles with a setup script.
 
 ### Installation
- The __install.sh__ command installs the *.dot files and installs the required plugins.
+ The __setup.sh__ command installs the *.dot files and installs the required plugins.
 
 

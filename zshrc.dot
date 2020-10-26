@@ -112,7 +112,8 @@ DISABLE_AUTO_TITLE="true"
 # Would you like to use another custom folder than $ZSH/custom?
 # ZSH_CUSTOM=/path/to/new-custom-folder
 #
-source /home/enaggan/google-cloud-sdk/path.zsh.inc
+# IF EXISTS sourcej
+#source /home/enaggan/google-cloud-sdk/path.zsh.inc
 
 # Which plugins would you like to load? (plugins can be found in ~/.oh-my-zsh/plugins/*)
 # Custom plugins may be added to ~/.oh-my-zsh/custom/plugins/

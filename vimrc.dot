@@ -330,7 +330,7 @@ let g:UltiSnipsEditSplit="vertical"
 
 " Check :help go-settings
 
-"colorscheme gruvbox
+colorscheme gruvbox
 "colorscheme zenburn
 "colorscheme molokai
 "colorscheme onedark
@@ -773,4 +773,4 @@ au FileType go nmap <F10> :GoTest -short<cr>
 au FileType go nmap <F9> :GoCoverageToggle -short<cr>
 au FileType go nmap <F12> <Plug>(go-def)
 
-colorscheme zenburn
+"colorscheme zenburn
