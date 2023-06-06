@@ -12,3 +12,10 @@ HISTFILESIZE=20000
 #export CXX="ccache g++"
 
 alias myssh='ssh -oStrictHostKeyChecking -oUserKnownHostsFile=/dev/null'
+alias vim=nvim
+
+#: enN {{{
+#: Kitty Aliases
+alias icat="kitty +kitten icat"
+alias s="kitty +kitten ssh"
+#: }}}

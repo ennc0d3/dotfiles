@@ -317,4 +317,7 @@ gotest() {
 export PATH="${KREW_ROOT:-$HOME/.krew}/bin:$PATH"
 
 # Add bob to path
-export PATH=${HOME}/git/bob:$PATH
+fpath+=${ZDOTDIR:-~}/.zsh_functions
+
+# Add the env source
+source ~/enaggan.env

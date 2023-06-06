@@ -182,7 +182,7 @@ install_oh_my_zsh() {
 
 	info "Install the zsh custom spaceship themes"
 	clone_or_pull https://github.com/denysdovhan/spaceship-prompt.git "$ZSH_CUSTOM/themes/spaceship-prompt"
-	ln -s "$ZSH_CUSTOM/themes/spaceship-prompt/spaceship.zsh-theme" "$ZSH_CUSTOM/themes/spaceship.zsh-theme" 
+	ln -sf "$ZSH_CUSTOM/themes/spaceship-prompt/spaceship.zsh-theme" "$ZSH_CUSTOM/themes/spaceship.zsh-theme" 
 }
 
 install_tmux() {
@@ -196,23 +196,27 @@ install_tmux() {
 
 create_symlinks() {
 	info "Symlink dotfiles"
+	set -x
 	package_root=$(readlink --canonicalize ${0%/*})
 	for f in $(ls -1 $package_root/*.dot); do
 		target_f=${f##*/}
 		target_f=${target_f%%.dot}
-		ln -s $f ~/.${target_f} > /dev/null 2>&1
+		ln -sf $f ~/.${target_f} > /dev/null 2>&1
 	done
 }
+
+# Remap key
+#dconf write "/org/gnome/desktop/input-sources/xkb-options" "[ 'caps:swapescape']"
 
 
 main() {
   info "main"
-  #clean_previous_installation
-  #create_symlinks
-  #install_vim_plugins
+  clean_previous_installation
+  create_symlinks
+  install_vim_plugins
   install_oh_my_zsh
-  #install_tmux
-  #install_terminal_settings
+  install_tmux
+  install_terminal_settings
 }
 
 main "$@"

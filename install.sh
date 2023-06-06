@@ -85,8 +85,8 @@ readonly INSTALL_TOOLS
 
 # VERSIONS
 declare -r  VAGRANT_VERSION=2.2.10
-declare -r HELM_VERSION=3.2.4
-declare -r KUBERNETES_VERSION=1.17.3
+declare -r HELM_VERSION=3.9.1
+declare -r KUBERNETES_VERSION=1.24.3
 
 # SCRIPT GLOVALS
 declare -r DOWNLOAD_DIR=/tmp/download-debs/
@@ -217,7 +217,7 @@ install_prebuilts() {
 }
 
 install_helm() {
-	set -x
+       set -x
        mkdir -p $DOWNLOAD_DIR/tars
        cd $DOWNLOAD_DIR/tars
        wget -N  "https://get.helm.sh/helm-v${HELM_VERSION}-linux-amd64.tar.gz"  -a $DOWNLOAD_DIR/logs
@@ -241,13 +241,13 @@ add_permissions() {
 main() {
   info "main"
   install_helm
-  exit
   add_gpg_keys
   install
   download_binaries $DOWNLOAD_DIR
   install_binaries $DOWNLOAD_DIR
   install_prebuilts
   add_permissions
+  info "Finished post installation"
 }
 
 main "$@"

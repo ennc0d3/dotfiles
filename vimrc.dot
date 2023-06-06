@@ -774,3 +774,7 @@ au FileType go nmap <F9> :GoCoverageToggle -short<cr>
 au FileType go nmap <F12> <Plug>(go-def)
 
 "colorscheme zenburn
+" To fix disappearing background color in vim when using kitty (xterm-kitty
+" TERM)
+let &t_ut=''
+

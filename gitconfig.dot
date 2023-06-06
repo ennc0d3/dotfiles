@@ -3,7 +3,10 @@
 	name = Nagarajan Ganesan
 
 [credential]
-	helper = store
+    helper = store
+
+[init]
+    defaultBranch= main
 
 [core]
 	editor = nvim
