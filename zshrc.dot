@@ -129,11 +129,13 @@ plugins=(
 	docker
 	kubectl
 	golang
-    aws
+	aws
 	zsh-completions
 	zsh-autosuggestions
 	zsh-syntax-highlighting
 	zsh-history-substring-search
+	gcloud
+	kubectl
 )
 # Reload autocomplete
 autoload -Uz compinit
