@@ -30,13 +30,11 @@
 #:     italic_font      Operator Mono Book Italic
 #:     bold_italic_font Operator Mono Medium Italic
 #
-# enN: Fira code doesn't have italic fonts
-font_family Fira Code
-bold_font Fira Code Bold (FiraCode-Bold)
-#: Fira Code Light (FiraCode-Light)
-#: Fira Code Medium (FiraCode-Medium)
-#: Fira Code Regular (FiraCode-Regular)
-#: Fira Code Retina (FiraCode-Retina)
+# enN: Using JetBrainsMono Nerd Font, as it needed in neovim NVChad
+font_family JetBrainsMono NF Regular
+bold_font JetBrainsMono NF Bold
+italic_font JetBrainsMono NF Italic
+bold_italic_font JetBrainsMono NF Italic
 
 # font_size 11.0
 
@@ -2394,6 +2392,7 @@ tab_powerline_syle rounded
 
 #: {{{ enN Generic customisations
 map kitty_mod+, set_tab_title
+map ctrl+p nth_window -1
 #
 # The value of the TERM environment variable to set
 term xterm-kitty
