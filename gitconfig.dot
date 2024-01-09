@@ -1,6 +1,6 @@
 [user]
-	email = ennc0d3@gmail.com
-	name = Nagarajan Ganesan
+    email = ennmail@gmail.com
+    name = Nagarajan Ganesan
 
 [credential]
     helper = store
@@ -9,9 +9,9 @@
     defaultBranch= main
 
 [core]
-	editor = nvim
-	autocrlf = false
-	safecrlf = true
+    editor = nvim
+    autocrlf = false
+    safecrlf = true
 
 [color]
     ui = true
@@ -33,14 +33,21 @@
     untracked = red
 
 [rerere]
-	enabled = true
+    enabled = true
     autoupdate = true
 
 [alias]
     st = status -uno
-    status = status -uno
     br = branch
     wow = log --all --graph --decorate --oneline --simplify-by-decoration
     fix = "!f() { ${EDITOR} `git diff --name-only`; }; f"
     edit-unmerged = "!$EDITOR `git diff --name-only --diff-filter=U`"
     add-unmerged = "!git add `git diff --name-only --diff-filter=U`"
+    migrate = "!f(){ CURRENT=$(git symbolic-ref --short HEAD); git checkout -b $1 && git branch --force $CURRENT ${3-$CURRENT@{u}} && git rebase --onto ${2-master} $CURRENT; }; f"
+	browse = !open `git config remote.origin.url`
+	pr = "!f(){ URL=$(git config remote.origin.url); open ${URL%.git}/compare/$(git rev-parse --abbrev-ref HEAD); }; f"
+
+[include]
+	path = ~/.gitconfig.aliases
+[safe]
+	directory = /tmp
