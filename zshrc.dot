@@ -135,6 +135,7 @@ plugins=(
 	kubectl
   aws
   fluxcd
+  poetry
 )
 # Reload autocomplete
 autoload -Uz compinit && compinit
@@ -321,7 +322,10 @@ fpath+=${ZDOTDIR:-~}/.zsh_functions
 source ~/enaggan.env
 
 # Add local --user path for python
-export PATH=~/.local/bin/:$PATH
+export PATH=/usr/local/anaconda3/bin:~/.local/bin/:$PATH
+
+# Pact for contract tests
+export PATH=/usr/local/pact/bin:$PATH
 
 # >>> VSCode venv deactivate hook >>>
 source ~/.vscode-python/deactivate
