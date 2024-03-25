@@ -1,3 +1,10 @@
+# Enable Powerlevel10k instant prompt. Should stay close to the top of ~/.zshrc.
+# Initialization code that may require console input (password prompts, [y/n]
+# confirmations, etc.) must go above this block; everything else may go below.
+if [[ -r "${XDG_CACHE_HOME:-$HOME/.cache}/p10k-instant-prompt-${(%):-%n}.zsh" ]]; then
+  source "${XDG_CACHE_HOME:-$HOME/.cache}/p10k-instant-prompt-${(%):-%n}.zsh"
+fi
+
 # .zshrc file
 # ===============================
 # Change log
@@ -41,28 +48,10 @@ fi
 # it'll load a random theme each time that oh-my-zsh is loaded.
 # See https://github.com/robbyrussell/oh-my-zsh/wiki/Themes
 #ZSH_THEME="bureau"
-function use_spaceship_theme() {
-	ZSH_THEME="spaceship"
-	SPACESHIP_VI_MODE_SHOW=false
-	SPACESHIP_DIR_TRUNC_REPO=false
-}
-# NOTE: mån  8 apr 2019 07:46:53 CEST Change to try powelinefont
-function use_powerlevel9k_theme() {
-	# git clone https://github.com/bhilburn/powerlevel9k.git ~/.oh-my-zsh/custom/themes/powerlevel9k
-	# Install nerd-fonts
-	# https://github.com/ryanoasis/nerd-fonts
-	# mkdir -p ~/.local/share/fonts
-	# cd ~/.local/share/fonts && curl -fLo "Droid Sans Mono for Powerline Nerd Font Complete.otf" https://github.com/ryanoasis/nerd-fonts/raw/master/patched-fonts/DroidSansMono/complete/Droid%20Sans%20Mono%20Nerd%20Font%20Complete.otf
-	# Prompt customization https://github.com/bhilburn/powerlevel9k#prompt-customization
-	POWERLEVEL9K_MODE='nerdfont-complete'
-	#POWERLEVEL9K_PROMPT_ADD_NEWLINE=true
-	POWERLEVEL9K_LEFT_PROMPT_ELEMENTS=(dir vcs newline status)
-	POWERLEVEL9K_RIGHT_PROMPT_ELEMENTS=(background_jobs command_execution_time time todo)
-	ZSH_THEME="powerlevel9k/powerlevel9k"
-}
+ZSH_THEME="powerlevel10k/powerlevel10k"
 
-use_spaceship_theme
-#use_powerlevel9k_theme
+#ZSH_THEME="agnoster"
+
 
 # Set list of themes to load
 # Setting this variable when ZSH_THEME=random
@@ -121,8 +110,6 @@ plugins=(
 	helm
 	vi-mode
 	colored-man-pages
-	tmux
-	#minikube
 	docker
 	kubectl
 	golang
@@ -136,6 +123,8 @@ plugins=(
   aws
   fluxcd
   poetry
+  zsh-interactive-cd
+  kind
 )
 # Reload autocomplete
 autoload -Uz compinit && compinit
@@ -181,10 +170,6 @@ zmodload -ap zsh/mapfile mapfile
 
 #{{{ Custom Zsh options
 #
-# Autoload tmux, attach to TMUX or create one, when no tmux
-# plugin used, tmux
-ZSH_TMUX_AUTOSTART=true
-
 setopt AUTO_CD # implicit cd
 #setopt RM_STAR_WAIT
 setopt ZLE
@@ -249,7 +234,9 @@ export PATH=$PATH:$HOME/go/bin
 
 #{{{ Experimental options, On unexpected issues, investigate from here
 # saner terminal setting
-stty sane
+if [ -t 1 ]; then
+  stty sane
+fi
 #}}}
 
 #{{{ Function, aliases
@@ -282,7 +269,8 @@ if [[ "$ZSH_PROFILE_STARTUP" == true ]]; then
 	exec 2>&3 3>&-
 fi
 #}}}
-echo "zsh took $(($(date '+%s%3N') - startTime))ms to start"
+# enN: Fix the expression
+#echo "zsh took $(($(date '+%s%3N') - startTime))ms to start"
 #}}}
 #
 #
@@ -322,11 +310,32 @@ fpath+=${ZDOTDIR:-~}/.zsh_functions
 source ~/enaggan.env
 
 # Add local --user path for python
-export PATH=/usr/local/anaconda3/bin:~/.local/bin/:$PATH
-
+#export PATH=/usr/local/anaconda3/bin:~/.local/bin/:$PATH
 # Pact for contract tests
-export PATH=/usr/local/pact/bin:$PATH
+#export PATH=/usr/local/pact/bin:$PATH
 
 # >>> VSCode venv deactivate hook >>>
-source ~/.vscode-python/deactivate
+#source ~/.vscode-python/deactivate
 # <<< VSCode venv deactivate hook <<<
+ 
+# March 12 2023
+alias vim=nvim
+alias icat='kitten icat'
+alias kdiff='kitten diff'
+if [ -e ~/.zshrc-wittra ]; then 
+  source ~/.zshrc-wittra
+fi
+
+# The next line updates PATH for the Google Cloud SDK.
+if [ -f '/Users/nagarajan.ganesan/Downloads/google-cloud-sdk/path.zsh.inc' ]; then . '/Users/nagarajan.ganesan/Downloads/google-cloud-sdk/path.zsh.inc'; fi
+
+# The next line enables shell command completion for gcloud.
+if [ -f '/Users/nagarajan.ganesan/Downloads/google-cloud-sdk/completion.zsh.inc' ]; then . '/Users/nagarajan.ganesan/Downloads/google-cloud-sdk/completion.zsh.inc'; fi
+
+# Add path to use code
+export PATH=$PATH:/usr/local/bin
+
+# To customize prompt, run `p10k configure` or edit ~/.p10k.zsh.
+[[ ! -f ~/.p10k.zsh ]] || source ~/.p10k.zsh
+
+typeset -g POWERLEVEL9K_INSTANT_PROMPT=quiet
