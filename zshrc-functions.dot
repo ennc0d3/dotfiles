@@ -1,0 +1,24 @@
+rm() {
+  local trash_dir="$HOME/.backups/$(date "+%Y-%m-%d")"
+    local timestamp=$(date "+%Y-%m-%d_%H%M%S")
+    
+    # Create the trash directory if it doesn't exist
+    [ ! -d "$trash_dir" ] && mkdir -p "$trash_dir"
+    
+    # Move each argument to the trash with a timestamp
+    for arg in "$@"; do
+        # Generate a unique filename to prevent overwrites
+        local base=$(basename "$arg")
+        local dest="$trash_dir/${base}_${timestamp}"
+        
+        # Move the file or directory
+        if [ -e "$arg" ]; then
+            mv "$arg" "$dest"
+            echo "Moved to '$dest'"
+        else
+            echo "Error: '$arg' does not exist."
+        fi
+    done
+}
+
+alias c='clear'

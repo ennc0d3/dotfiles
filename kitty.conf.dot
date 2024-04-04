@@ -2404,8 +2404,8 @@ tab_powerline_syle rounded
 map kitty_mod+, set_tab_title
 map ctrl+p nth_window -1
 
-map ctrl+shift+v split_window --vertical
-map ctrl+shift+h split_window --horizontal
+#map ctrl+shift+v split_window --vertical
+#map ctrl+shift+h split_window --horizontal
 
 # The value of the TERM environment variable to set
 # enN, For mac?
@@ -2414,6 +2414,6 @@ map ctrl+shift+h split_window --horizontal
 
 
 # BEGIN_KITTY_THEME
-# Gruvbox Material Dark Soft
+# Dracula
 include current-theme.conf
 # END_KITTY_THEME
