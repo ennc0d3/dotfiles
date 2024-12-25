@@ -125,6 +125,7 @@ plugins=(
   poetry
   zsh-interactive-cd
   kind
+  terraform
 )
 # Reload autocomplete
 autoload -Uz compinit && compinit
@@ -287,6 +288,7 @@ setopt share_history          # share command history data
 #
 # {{{ CTRL-<space>
 bindkey '^ ' autosuggest-accept
+bindkey '^ ' autosuggest-execute # for zsh-autosuggestions
 # }}}
 #
 # {{{ Change autosuggesion hight color in solarized dark
@@ -348,3 +350,21 @@ export PATH=$PATH:/usr/local/bin
 [[ ! -f ~/.p10k.zsh ]] || source ~/.p10k.zsh
 
 typeset -g POWERLEVEL9K_INSTANT_PROMPT=quiet
+
+export NVM_DIR="$HOME/.nvm"
+[ -s "$NVM_DIR/nvm.sh" ] && \. "$NVM_DIR/nvm.sh"  # This loads nvm
+[ -s "$NVM_DIR/bash_completion" ] && \. "$NVM_DIR/bash_completion"  # This loads nvm bash_completion
+export PATH="/opt/homebrew/opt/openjdk/bin:$PATH"
+
+bindkey '^n' expand-or-complete
+bindkey '^p' reverse-menu-complete
+
+
+bindkey '^k' up-history
+bindkey '^j' down-history
+bindkey '^h' backward-delete-char
+bindkey '^w' backward-kill-word
+bindkey '^r' history-incremental-search-backward
+
+# Created by `pipx` on 2024-12-04 10:04:38
+export PATH="$PATH:/Users/nagarajan.ganesan/.local/bin"
